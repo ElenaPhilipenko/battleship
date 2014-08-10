@@ -10,13 +10,13 @@ public class MaskedGameGrid {
 
     protected final List<List<CellState>> grid;
 
-    public MaskedGameGrid(MaskedGameGrid grid) {
-        this.grid = grid.grid;
+    public MaskedGameGrid(List<List<CellState>> grid) {
+        this.grid = grid;
     }
 
-    public MaskedGameGrid(Iterable<Cell> shipLocation, int gridSize) {
+    protected MaskedGameGrid (Iterable<Cell> shipLocation, int gridSize) {
         this.grid = createEmptyGrid(gridSize);
-        locateShips(shipLocation);
+        locateShips(grid, shipLocation);
     }
 
     public int getSize() {
@@ -73,9 +73,9 @@ public class MaskedGameGrid {
         return result;
     }
 
-    private void locateShips(Iterable<Cell> shipCells) {
-        for (Cell p : shipCells) {
-            setCellAtPoint(p, CellState.SHIP);
+    private void locateShips(List<List<CellState>> grid, Iterable<Cell> shipCells) {
+        for (Cell cell : shipCells) {
+            grid.get(cell.x).set(cell.y, CellState.SHIP);
         }
     }
 }

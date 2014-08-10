@@ -18,7 +18,7 @@ public class FleetTest {
 
     @Test
     public void testFindEmptyCells() {
-        final MaskedGameGrid gameGrid = new MaskedGameGrid(new ArrayList<>(), 10);
+        final MaskedGameGrid gameGrid = new WriteGameGrid(new ArrayList<>(), 10);
         Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
     }
 
@@ -26,7 +26,7 @@ public class FleetTest {
     public void testFindEmptyCellsWithOneShip() {
         List<Cell> ships = new ArrayList<>();
         ships.add(new Cell(0, 0));
-        final MaskedGameGrid gameGrid = new MaskedGameGrid(ships, 10);
+        final MaskedGameGrid gameGrid = new WriteGameGrid(ships, 10);
         Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
     }
 
@@ -34,7 +34,7 @@ public class FleetTest {
     public void testFindEmptyCellsWithOneShipAndShots() {
         List<Cell> ships = new ArrayList<>();
         ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
         gameGrid.applyShot(new Cell(0, 9));
         gameGrid.applyShot(new Cell(0, 1));
         gameGrid.applyShot(new Cell(0, 2));
@@ -45,7 +45,7 @@ public class FleetTest {
     public void testFindEmptyCellsWithhitShip() {
         List<Cell> ships = new ArrayList<>();
         ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
         gameGrid.applyShot(new Cell(0, 9));
         gameGrid.applyShot(new Cell(0, 1));
         gameGrid.applyShot(new Cell(0, 2));
@@ -58,7 +58,7 @@ public class FleetTest {
     public void testDetectAfloatShip() {
         List<Cell> ships = new ArrayList<>();
         ships.add(new Cell(0, 0));
-        final MaskedGameGrid gameGrid = new MaskedGameGrid(ships, 10);
+        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
         Assert.assertTrue(gameGrid.hasAfloatShip());
     }
 
@@ -66,7 +66,7 @@ public class FleetTest {
     public void testDetectAfloat3PartShip() {
         List<Cell> ships = new ArrayList<>();
         ships.addAll((Arrays.asList(new Cell(0, 0), new Cell(0, 1), new Cell(0, 2))));
-        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
         gameGrid.applyShot(new Cell(0, 1));
         gameGrid.applyShot(new Cell(0, 2));
         Assert.assertTrue(gameGrid.hasAfloatShip());
@@ -76,7 +76,7 @@ public class FleetTest {
     public void testDetectSunkShip() {
         List<Cell> ships = new ArrayList<>();
         ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
         gameGrid.applyShot(new Cell(0, 0));
         Assert.assertFalse(gameGrid.hasAfloatShip());
     }

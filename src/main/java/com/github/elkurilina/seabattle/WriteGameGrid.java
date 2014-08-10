@@ -1,15 +1,15 @@
 package com.github.elkurilina.seabattle;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Elena Kurilina
  */
 public class WriteGameGrid extends MaskedGameGrid {
 
-    public WriteGameGrid(MaskedGameGrid grid) {
-        super(grid);
+    public final MaskedGameGrid maskedGrid;
+
+    public WriteGameGrid(Iterable<Cell> shipLocation, int gridSize) {
+        super(shipLocation, gridSize);
+        maskedGrid = new MaskedGameGrid(grid);
     }
 
     public CellState getCellState(Cell cell) {
@@ -20,7 +20,7 @@ public class WriteGameGrid extends MaskedGameGrid {
         CellState state = grid.get(cell.x).get(cell.y);
         if (state == CellState.SHIP) {
             setCellAtPoint(cell, CellState.HIT_SHIP);
-            if (hasShipCellAround(cell, true)) {
+            if (!hasShipCellAround(cell, true)) {
                 return ShotResult.SHIP_IS_DEAD;
             }
             return ShotResult.HIT;
@@ -35,14 +35,14 @@ public class WriteGameGrid extends MaskedGameGrid {
         for (Cell p : surroundPoints) {
             final CellState state = getCellState(p);
             if (state == CellState.SHIP) {
-                return false;
+                return true;
             } else if (state == CellState.HIT_SHIP && checkAround) {
-                if (!hasShipCellAround(p, false)) {
-                    return false;
+                if (hasShipCellAround(p, false)) {
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
 
