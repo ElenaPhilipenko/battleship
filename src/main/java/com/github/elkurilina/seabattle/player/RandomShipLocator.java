@@ -1,10 +1,8 @@
 package com.github.elkurilina.seabattle.player;
 
-import com.github.elkurilina.seabattle.Ship;
+import com.github.elkurilina.seabattle.Cell;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author Elena Kurilina
@@ -12,28 +10,28 @@ import java.util.List;
 public class RandomShipLocator {
     private final Random random = new Random();
 
-    public Collection<Ship> createShips(Iterable<Integer> shipSizes, int size) {
-        final Collection<Ship> ships = new HashSet<>();
-        final List<Point> field = createPossiblePoints(size);
+    public Collection<Cell> createShips(Iterable<Integer> shipSizes, int size) {
+        final Collection<Cell> shipLocations = new HashSet<>();
+        final List<Cell> field = createPossiblePoints(size);
         for (Integer shipSize : shipSizes) {
-            ships.add(createShip(field, shipSize));
+            shipLocations.addAll(createShip(field, shipSize, size));
         }
-        return ships;
+        return shipLocations;
     }
 
-    private Ship createShip(List<Point> field, int shipSize) {
-        final Set<Point> shipLocation = findShipLocation(field, shipSize);
+    private Collection<Cell> createShip(List<Cell> field, int shipSize, int size) {
+        final Set<Cell> shipLocation = findShipLocation(field, shipSize);
         field.removeAll(shipLocation);
-        removeAllPointsAround(field, shipLocation);
-        return new Ship(shipLocation);
+        removeAllPointsAround(field, shipLocation, size);
+        return shipLocation;
     }
 
-    private Set<Point> findShipLocation(java.util.List<Point> field, int shipSize) {
-        final Point head = field.get(random.nextInt(field.size()));
+    private Set<Cell> findShipLocation(List<Cell> field, int shipSize) {
+        final Cell head = field.get(random.nextInt(field.size()));
         final boolean horizontal = random.nextBoolean();
-        Set<Point> shipLocation = new HashSet<>(shipSize);
+        Set<Cell> shipLocation = new HashSet<>(shipSize);
         for (int i = 0; i < shipSize; i++) {
-            final Point option = horizontal ? new Point(head.x, head.y + i) : new Point(head.x + i, head.y);
+            final Cell option = horizontal ? new Cell(head.x, head.y + i) : new Cell(head.x + i, head.y);
             if (field.contains(option)) {
                 shipLocation.add(option);
             } else {
@@ -43,33 +41,20 @@ public class RandomShipLocator {
         return shipLocation;
     }
 
-    private void removeAllPointsAround(Collection<Point> field, Collection<Point> shipLocation) {
-        for (Point p : shipLocation) {
-            Iterable<Point> points = getSurroundingPoints(p);
-            for (Point point : points) {
+    private void removeAllPointsAround(Collection<Cell> field, Collection<Cell> shipLocation, int size) {
+        for (Cell cell : shipLocation) {
+            Iterable<Cell> points = cell.findNeighborsOnFieldWithDiagonals(size);
+            for (Cell point : points) {
                 field.remove(point);
             }
         }
     }
 
-    private Collection<Point> getSurroundingPoints(Point p) {
-        Collection<Point> surroundingPoints = new HashSet<>();
-        surroundingPoints.add(new Point(p.x + 1, p.y + 1));
-        surroundingPoints.add(new Point(p.x - 1, p.y - 1));
-        surroundingPoints.add(new Point(p.x + 1, p.y - 1));
-        surroundingPoints.add(new Point(p.x - 1, p.y + 1));
-        surroundingPoints.add(new Point(p.x + 1, p.y));
-        surroundingPoints.add(new Point(p.x - 1, p.y));
-        surroundingPoints.add(new Point(p.x, p.y + 1));
-        surroundingPoints.add(new Point(p.x, p.y - 1));
-        return surroundingPoints;
-    }
-
-    private java.util.List<Point> createPossiblePoints(int size) {
-        final java.util.List<Point> field = new ArrayList<>();
+    private List<Cell> createPossiblePoints(int size) {
+        final java.util.List<Cell> field = new ArrayList<>();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                field.add(new Point(x, y));
+                field.add(new Cell(x, y));
             }
         }
         return field;

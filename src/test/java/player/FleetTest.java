@@ -1,11 +1,11 @@
 package player;
 
-import com.github.elkurilina.seabattle.GameGreed;
-import com.github.elkurilina.seabattle.Ship;
+import com.github.elkurilina.seabattle.Cell;
+import com.github.elkurilina.seabattle.MaskedGameGrid;
+import com.github.elkurilina.seabattle.WriteGameGrid;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,68 +18,67 @@ public class FleetTest {
 
     @Test
     public void testFindEmptyCells() {
-        final GameGreed gameGreed = new GameGreed(new ArrayList<>(), 10);
-        Assert.assertEquals(gameGreed.findNotShotPoints().size(), 100);
-
+        final MaskedGameGrid gameGrid = new MaskedGameGrid(new ArrayList<>(), 10);
+        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
     }
 
     @Test
     public void testFindEmptyCellsWithOneShip() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        Assert.assertEquals(gameGreed.findNotShotPoints().size(), 100);
+        List<Cell> ships = new ArrayList<>();
+        ships.add(new Cell(0, 0));
+        final MaskedGameGrid gameGrid = new MaskedGameGrid(ships, 10);
+        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
     }
 
     @Test
     public void testFindEmptyCellsWithOneShipAndShots() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        gameGreed.applyShot(new Point(0, 9));
-        gameGreed.applyShot(new Point(0, 1));
-        gameGreed.applyShot(new Point(0, 2));
-        Assert.assertEquals(gameGreed.findNotShotPoints().size(), 97);
+        List<Cell> ships = new ArrayList<>();
+        ships.add(new Cell(0, 0));
+        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        gameGrid.applyShot(new Cell(0, 9));
+        gameGrid.applyShot(new Cell(0, 1));
+        gameGrid.applyShot(new Cell(0, 2));
+        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 97);
     }
 
     @Test
     public void testFindEmptyCellsWithhitShip() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        gameGreed.applyShot(new Point(0, 9));
-        gameGreed.applyShot(new Point(0, 1));
-        gameGreed.applyShot(new Point(0, 2));
-        gameGreed.applyShot(new Point(0, 0));
-        Assert.assertEquals(gameGreed.findNotShotPoints().size(), 96);
+        List<Cell> ships = new ArrayList<>();
+        ships.add(new Cell(0, 0));
+        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        gameGrid.applyShot(new Cell(0, 9));
+        gameGrid.applyShot(new Cell(0, 1));
+        gameGrid.applyShot(new Cell(0, 2));
+        gameGrid.applyShot(new Cell(0, 0));
+        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 96);
     }
 
 
     @Test
     public void testDetectAfloatShip() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        Assert.assertTrue(gameGreed.hasAfloatShip());
+        List<Cell> ships = new ArrayList<>();
+        ships.add(new Cell(0, 0));
+        final MaskedGameGrid gameGrid = new MaskedGameGrid(ships, 10);
+        Assert.assertTrue(gameGrid.hasAfloatShip());
     }
 
     @Test
     public void testDetectAfloat3PartShip() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0), new Point(0, 1), new Point(0, 2))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        gameGreed.applyShot(new Point(0, 1));
-        gameGreed.applyShot(new Point(0, 2));
-        Assert.assertTrue(gameGreed.hasAfloatShip());
+        List<Cell> ships = new ArrayList<>();
+        ships.addAll((Arrays.asList(new Cell(0, 0), new Cell(0, 1), new Cell(0, 2))));
+        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        gameGrid.applyShot(new Cell(0, 1));
+        gameGrid.applyShot(new Cell(0, 2));
+        Assert.assertTrue(gameGrid.hasAfloatShip());
     }
 
     @Test
     public void testDetectSunkShip() {
-        List<Ship> ships = new ArrayList<>();
-        ships.add(new Ship(Arrays.asList(new Point(0, 0))));
-        final GameGreed gameGreed = new GameGreed(ships, 10);
-        gameGreed.applyShot(new Point(0, 0));
-        Assert.assertFalse(gameGreed.hasAfloatShip());
+        List<Cell> ships = new ArrayList<>();
+        ships.add(new Cell(0, 0));
+        final WriteGameGrid gameGrid = new WriteGameGrid(new MaskedGameGrid(ships, 10));
+        gameGrid.applyShot(new Cell(0, 0));
+        Assert.assertFalse(gameGrid.hasAfloatShip());
     }
 
 

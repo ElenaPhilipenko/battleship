@@ -5,9 +5,11 @@ package com.github.elkurilina.seabattle;
  */
 public interface Player {
 
-    boolean makeShot(GameGreed greed);
+    Cell makeShot(MaskedGameGrid gameGrid);
 
-    GameGreed getGameGrid();
+    boolean handleShotResult(ShotResult shotResult);
+
+    public Iterable<Cell> getShips(Iterable<Integer> shipSizes);
 
     String getName();
 

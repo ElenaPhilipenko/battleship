@@ -1,41 +1,41 @@
 package com.github.elkurilina.seabattle;
 
+import java.util.Arrays;
+
 /**
  * @author Elena Kurilina
  */
 public class Game {
+    public static final int FIELD_SIZE = 10;
+    public static final Iterable<Integer> SHIP_SIZES = Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1);
 
-    public void playGame(Player p1, Player p2) {
-        final GameGreed p1GameGreed = p1.getGameGrid();
-        final GameGreed p2GameGreed = p2.getGameGrid();
-
-        while (!isGameEnded(p1GameGreed, p2GameGreed)) {
-            makeShots(p1, p2GameGreed);
-            if (!isGameEnded(p1GameGreed, p2GameGreed)) {
-                makeShots(p2, p1GameGreed);
+    public String playGame(Player p1, Player p2, MaskedGameGrid p1GameGrid, MaskedGameGrid p2GameGrid) {
+        final WriteGameGrid mask1 = new WriteGameGrid(p1GameGrid);
+        final WriteGameGrid mask2 = new WriteGameGrid(p2GameGrid);
+        while (!isGameEnded(p1GameGrid, p2GameGrid)) {
+            makeShots(p1, mask2, p2GameGrid);
+            if (!isGameEnded(p1GameGrid, p2GameGrid)) {
+                makeShots(p2, mask1, p1GameGrid);
             }
         }
-        System.out.println("Winner is: " + detectWinner(p1, p2).getName());
+        return (p1GameGrid.hasAfloatShip() ? p1.getName() : p2.getName());
     }
 
-    private void makeShots(Player p1, GameGreed p2GameGreed) {
+    private void makeShots(Player p1, WriteGameGrid writeGameGrid, MaskedGameGrid maskedGameGrid) {
         boolean hit = true;
         while (hit) {
-            hit = p1.makeShot(p2GameGreed);
+            final ShotResult result = writeGameGrid.applyShot(p1.makeShot(maskedGameGrid));
+            p1.handleShotResult(result);
+            hit = (result == ShotResult.HIT || result == ShotResult.SHIP_IS_DEAD);
         }
     }
 
-    private boolean isGameEnded(GameGreed f1, GameGreed f2) {
+    private boolean isGameGridValid(WriteGameGrid gameGrid) {
+        return false; //TODO: implement
+    }
+
+    private boolean isGameEnded(MaskedGameGrid f1, MaskedGameGrid f2) {
         return !f1.hasAfloatShip() || !f2.hasAfloatShip();
-    }
-
-    private Player detectWinner(Player p1, Player p2) {
-        if (p2.getGameGrid().hasAfloatShip()) {
-            return p2;
-        } else {
-            return p1;
-        }
-
     }
 
 

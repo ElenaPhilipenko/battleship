@@ -1,11 +1,14 @@
 package player;
 
 import com.github.elkurilina.seabattle.Game;
+import com.github.elkurilina.seabattle.MaskedGameGrid;
+import com.github.elkurilina.seabattle.WriteGameGrid;
+import com.github.elkurilina.seabattle.Player;
 import com.github.elkurilina.seabattle.player.RandomPlayer;
 import org.testng.annotations.Test;
 
-import static com.github.elkurilina.seabattle.SeaBattle.FIELD_SIZE;
-import static com.github.elkurilina.seabattle.SeaBattle.SHIP_SIZES;
+import static com.github.elkurilina.seabattle.Game.FIELD_SIZE;
+import static com.github.elkurilina.seabattle.Game.SHIP_SIZES;
 
 /**
  * @author Elena Kurilina
@@ -16,8 +19,12 @@ public class RandomPlayerTest {
     @Test
     public void testPlayGame() {
         Game game = new Game();
+        final Player p2 = new RandomPlayer(FIELD_SIZE);
+        final Player p1 = new RandomPlayer(FIELD_SIZE);
 
-        game.playGame(new RandomPlayer(SHIP_SIZES, FIELD_SIZE), new RandomPlayer(SHIP_SIZES, FIELD_SIZE));
+        final MaskedGameGrid p1GameGrid = new MaskedGameGrid(p1.getShips(SHIP_SIZES), FIELD_SIZE);
+        final MaskedGameGrid p2GameGrid = new MaskedGameGrid(p2.getShips(SHIP_SIZES), FIELD_SIZE);
+        game.playGame(p1, p2, p1GameGrid, p2GameGrid);
     }
 
 //    @Test
