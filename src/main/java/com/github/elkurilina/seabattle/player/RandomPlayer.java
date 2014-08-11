@@ -53,23 +53,13 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Iterable<Cell> getShips(Iterable<Integer> shipSizes) {
+    public Collection<Cell> getShips(Iterable<Integer> shipSizes) {
         return new RandomShipLocator().createShips(shipSizes, size);
     }
 
     @Override
     public String getName() {
         return "Bot Player";
-    }
-
-    private List<Cell> createPoints(int size) {
-        final List<Cell> field = new ArrayList<>();
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                field.add(new Cell(x, y));
-            }
-        }
-        return field;
     }
 
 

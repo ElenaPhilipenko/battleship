@@ -1,5 +1,7 @@
 package com.github.elkurilina.seabattle;
 
+import java.util.Collection;
+
 /**
  * @author Elena Kurilina
  */
@@ -9,7 +11,7 @@ public interface Player {
 
     boolean handleShotResult(ShotResult shotResult);
 
-    public Iterable<Cell> getShips(Iterable<Integer> shipSizes);
+    public Collection<Cell> getShips(Iterable<Integer> shipSizes);
 
     String getName();
 

@@ -1,20 +1,32 @@
 package player;
 
 import com.github.elkurilina.seabattle.Cell;
+import com.github.elkurilina.seabattle.CellState;
 import com.github.elkurilina.seabattle.MaskedGameGrid;
 import com.github.elkurilina.seabattle.WriteGameGrid;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Elena Kurilina
  */
 
 public class FleetTest {
+    private static final Logger LOG = Logger.getLogger(FleetTest.class);
+
+    @DataProvider(name = "shipSizes")
+    public static Iterator<Object[]> getShipSizes() {
+        Collection<Object[]> ships = new HashSet<>();
+        ships.add(new Object[]{4});
+        ships.add(new Object[]{3});
+        ships.add(new Object[]{2});
+        ships.add(new Object[]{1});
+        return ships.iterator();
+    }
 
     @Test
     public void testFindEmptyCells() {
@@ -23,19 +35,21 @@ public class FleetTest {
     }
 
     @Test
+    public void testCreateGameGridWithShips() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(4);
+        Assert.assertEquals(gameGrid.getCellState(new Cell(0, 0)), CellState.SHIP);
+    }
+
+    @Test
     public void testFindEmptyCellsWithOneShip() {
-        List<Cell> ships = new ArrayList<>();
-        ships.add(new Cell(0, 0));
-        final MaskedGameGrid gameGrid = new WriteGameGrid(ships, 10);
+        final MaskedGameGrid gameGrid = getWriteGameGridWitShip(1);
         Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
     }
 
     @Test
-    public void testFindEmptyCellsWithOneShipAndShots() {
-        List<Cell> ships = new ArrayList<>();
-        ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
-        gameGrid.applyShot(new Cell(0, 9));
+    public void testFindEmptyCellsWithShipsAndShots() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(3);
+        gameGrid.applyShot(new Cell(6, 9));
         gameGrid.applyShot(new Cell(0, 1));
         gameGrid.applyShot(new Cell(0, 2));
         Assert.assertEquals(gameGrid.findNotShotPoints().size(), 97);
@@ -43,9 +57,7 @@ public class FleetTest {
 
     @Test
     public void testFindEmptyCellsWithhitShip() {
-        List<Cell> ships = new ArrayList<>();
-        ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(1);
         gameGrid.applyShot(new Cell(0, 9));
         gameGrid.applyShot(new Cell(0, 1));
         gameGrid.applyShot(new Cell(0, 2));
@@ -53,33 +65,60 @@ public class FleetTest {
         Assert.assertEquals(gameGrid.findNotShotPoints().size(), 96);
     }
 
-
-    @Test
-    public void testDetectAfloatShip() {
-        List<Cell> ships = new ArrayList<>();
-        ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
+    @Test(dataProvider = "shipSizes")
+    public void testDetectAfloatShip(Integer size) {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(size);
         Assert.assertTrue(gameGrid.hasAfloatShip());
     }
 
     @Test
-    public void testDetectAfloat3PartShip() {
-        List<Cell> ships = new ArrayList<>();
-        ships.addAll((Arrays.asList(new Cell(0, 0), new Cell(0, 1), new Cell(0, 2))));
-        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
-        gameGrid.applyShot(new Cell(0, 1));
-        gameGrid.applyShot(new Cell(0, 2));
-        Assert.assertTrue(gameGrid.hasAfloatShip());
-    }
-
-    @Test
-    public void testDetectSunkShip() {
-        List<Cell> ships = new ArrayList<>();
-        ships.add(new Cell(0, 0));
-        final WriteGameGrid gameGrid = new WriteGameGrid(ships, 10);
+    public void testHasNoAfloatShip() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(1);
         gameGrid.applyShot(new Cell(0, 0));
         Assert.assertFalse(gameGrid.hasAfloatShip());
     }
 
+    @Test
+    public void testMarkShipAsDead() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(1);
+        gameGrid.applyShot(new Cell(0, 0));
+        Assert.assertEquals(gameGrid.findDeadShips().size(), 1);
+    }
+
+    @Test
+    public void testNotMarkShipAsDead() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(4);
+        Assert.assertEquals(gameGrid.findDeadShips().size(), 0);
+    }
+
+    @Test
+    public void testNotMarkHitShipAsDead() {
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(4);
+        gameGrid.applyShot(new Cell(0, 0));
+        Assert.assertEquals(gameGrid.findDeadShips().size(), 0);
+    }
+
+
+    @Test(dataProvider = "shipSizes")
+    public void testFindDeadShip(Integer shipSize) {
+        LOG.info("test for ship size: " + shipSize);
+        final WriteGameGrid gameGrid = getWriteGameGridWitShip(shipSize);
+        int size = shipSize;
+        while (size > 0) {
+            gameGrid.applyShot(new Cell(size - 1, 0));
+            size--;
+        }
+
+        Assert.assertEquals(gameGrid.findDeadShips().size(), shipSize.intValue());
+    }
+
+    private WriteGameGrid getWriteGameGridWitShip(int shipSize) {
+        List<Cell> ships = new ArrayList<>();
+        while (shipSize > 0) {
+            ships.add(new Cell(shipSize - 1, 0));
+            shipSize--;
+        }
+        return new WriteGameGrid(ships, 10);
+    }
 
 }

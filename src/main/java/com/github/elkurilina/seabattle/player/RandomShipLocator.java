@@ -10,11 +10,11 @@ import java.util.*;
 public class RandomShipLocator {
     private final Random random = new Random();
 
-    public Collection<Cell> createShips(Iterable<Integer> shipSizes, int size) {
+    public Collection<Cell> createShips(Iterable<Integer> shipSizes, int gridSize) {
         final Collection<Cell> shipLocations = new HashSet<>();
-        final List<Cell> field = createPossiblePoints(size);
+        final List<Cell> field = createPossiblePoints(gridSize);
         for (Integer shipSize : shipSizes) {
-            shipLocations.addAll(createShip(field, shipSize, size));
+            shipLocations.addAll(createShip(field, shipSize, gridSize));
         }
         return shipLocations;
     }

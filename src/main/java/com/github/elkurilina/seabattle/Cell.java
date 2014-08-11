@@ -1,5 +1,6 @@
 package com.github.elkurilina.seabattle;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -23,7 +24,6 @@ public class Cell {
         validateAndAdd(x + 1, y + 1, surroundingPoints, size);
 
         return surroundingPoints;
-
     }
 
     public Collection<Cell> findNeighborsOnField(int size) {
@@ -34,12 +34,20 @@ public class Cell {
         validateAndAdd(x, y - 1, surroundingPoints, size);
 
         return surroundingPoints;
+    }
 
+    public Cell translate(Point p) {
+        return new Cell(x + p.x, y + p.y);
+    }
+
+    public boolean isInside(int size) {
+        return x >= 0 && x < size && y >= 0 && y < size;
     }
 
     private void validateAndAdd(int x, int y, Collection<Cell> validPoints, int size) {
-        if (x >= 0 && x < size && y >= 0 && y < size) {
-            validPoints.add(new Cell(x, y));
+        final Cell cell = new Cell(x, y);
+        if (cell.isInside(size)) {
+            validPoints.add(cell);
         }
     }
 
@@ -54,6 +62,14 @@ public class Cell {
         if (y != cell.y) return false;
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 
     @Override

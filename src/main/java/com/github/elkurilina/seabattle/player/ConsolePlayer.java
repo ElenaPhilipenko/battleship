@@ -55,8 +55,8 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Iterable<Cell> getShips(Iterable<Integer> shipSizes) {
-        final Iterable<Cell> shipCells;
+    public Collection<Cell> getShips(Iterable<Integer> shipSizes) {
+        final Collection<Cell> shipCells;
         System.out.println("Do you want create random game grid? (y/n)");
         try {
             if (br.readLine().contains("n")) {
@@ -80,7 +80,7 @@ public class ConsolePlayer implements Player {
         this.myGreed = myGreed;
     }
 
-    private Iterable<Cell> createSips(Iterable<Integer> shipSizes, int size) {
+    private Collection<Cell> createSips(Iterable<Integer> shipSizes, int size) {
         final Collection<Cell> shipCells = new HashSet<>();
         for (Integer shipSize : shipSizes) {
             final Set<Cell> shipLocation = new HashSet<>();
