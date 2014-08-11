@@ -13,20 +13,18 @@ import java.util.*;
 public class ConsolePlayer implements Player {
 
     private static final Map<CellState, String> printValues = new HashMap<>();
-
     static {
         printValues.put(CellState.MISSED_SHOT, ".");
         printValues.put(CellState.EMPTY, "-");
         printValues.put(CellState.HIDDEN, "?");
-        printValues.put(CellState.HIT_SHIP, "x");
+        printValues.put(CellState.HIT_SHIP, "!");
+        printValues.put(CellState.DEAD_SHIP, "x");
         printValues.put(CellState.SHIP, "s");
     }
 
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
     private final String name;
     private final int size;
-
     private WriteGameGrid myGreed;
 
     public ConsolePlayer(int fieldSize) throws IOException {
@@ -47,11 +45,6 @@ public class ConsolePlayer implements Player {
             System.out.print("Can not parse move.");
             return makeShot(grid);
         }
-    }
-
-    @Override
-    public boolean handleShotResult(ShotResult shotResult) {
-        return false;
     }
 
     @Override
@@ -127,6 +120,5 @@ public class ConsolePlayer implements Player {
         }
         System.out.println("  0 1 2 3 4 5 6 7 8 9");
     }
-
 
 }

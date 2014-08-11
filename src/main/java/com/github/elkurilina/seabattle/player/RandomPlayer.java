@@ -1,21 +1,20 @@
 package com.github.elkurilina.seabattle.player;
 
-import com.github.elkurilina.seabattle.*;
+import com.github.elkurilina.seabattle.Cell;
 import com.github.elkurilina.seabattle.MaskedGameGrid;
+import com.github.elkurilina.seabattle.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Elena Kurilina
  */
 public class RandomPlayer implements Player {
+    public static final String BOT_PLAYER = "Bot Player";
     private final Random random = new Random();
 
     private final int size;
-
-    private final Set<Cell> cellsAroundShips = new HashSet<>();
-    private final List<Cell> nextShots = new ArrayList<>();
-    private Cell lastShot;
 
     public RandomPlayer(int fieldSize) {
         this.size = fieldSize;
@@ -23,33 +22,16 @@ public class RandomPlayer implements Player {
 
     @Override
     public Cell makeShot(MaskedGameGrid grid) {
-        final List<Cell> notShotCells = grid.findNotShotPoints();
-        if (nextShots.isEmpty()) {
-            notShotCells.removeAll(cellsAroundShips);
-            lastShot = notShotCells.get(random.nextInt(notShotCells.size()));
+        final Collection<Cell> hitShip = grid.findHitShip();
+        final Collection<Cell> notShotCells = grid.findNotShotPoints();
+        final List<Cell> candidates;
+        if (!hitShip.isEmpty()) {
+            candidates =  findBestCandidatesAround(hitShip).stream().filter(notShotCells::contains).collect(Collectors.toList());
         } else {
-            lastShot = nextShots.remove(0);
-            if (!notShotCells.remove(lastShot)) {
-                return makeShot(grid);
-            }
+            notShotCells.removeAll(findCellsAround(grid.findDeadShips()));
+            candidates = new ArrayList<>(notShotCells);
         }
-        return lastShot;
-    }
-
-    @Override
-    public boolean handleShotResult(ShotResult result) {
-        switch (result) {
-            case MISSED:
-                return false;
-            case HIT:
-                cellsAroundShips.add(lastShot);
-                nextShots.addAll(lastShot.findNeighborsOnField(size));
-                return true;
-            case SHIP_IS_DEAD:
-                nextShots.clear();
-                return true;
-        }
-        return false;
+        return candidates.get(random.nextInt(candidates.size()));
     }
 
     @Override
@@ -59,8 +41,40 @@ public class RandomPlayer implements Player {
 
     @Override
     public String getName() {
-        return "Bot Player";
+        return BOT_PLAYER;
     }
 
+    private Collection<Cell> findCellsAround(Collection<Cell> deadShips) {
+        final Collection<Cell> allCells = new HashSet<>();
+        deadShips.stream().forEach(cell -> allCells.addAll(cell.findNeighborsOnGridWithDiagonals(size)));
+        allCells.addAll(deadShips);
+        return allCells;
+    }
+
+    private Collection<Cell> findBestCandidatesAround(Collection<Cell> hitShip) {
+        if (hitShip.size() > 1) {
+            final Collection<Cell> candidates = new HashSet<>();
+            final Cell min = hitShip.stream().min(new CellComparator()).get();
+            final Cell max = hitShip.stream().max(new CellComparator()).get();
+            final boolean horizontal = max.x - min.x != 0;
+            candidates.add(max.translate(1, horizontal));
+            candidates.add(min.translate(-1, horizontal));
+            return candidates;
+        } else {
+            return hitShip.iterator().next().findNeighborsOnGrid(size);
+        }
+    }
+
+    private static class CellComparator implements Comparator<Cell> {
+
+        @Override
+        public int compare(Cell o1, Cell o2) {
+            if (o1.x == o2.x && o1.y == o2.y) {
+                return 0;
+            } else {
+                return o1.x > o2.x || o1.y > o2.y ? 1 : -1;
+            }
+        }
+    }
 
 }

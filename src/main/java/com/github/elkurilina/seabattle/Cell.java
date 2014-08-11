@@ -1,13 +1,12 @@
 package com.github.elkurilina.seabattle;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
 
 /**
  * @author Elena Kurilina
  */
-public class Cell {
+public class Cell{
     public final int x;
     public final int y;
 
@@ -16,32 +15,36 @@ public class Cell {
         this.y = y;
     }
 
-    public Collection<Cell> findNeighborsOnFieldWithDiagonals(int size) {
-        final Collection<Cell> surroundingPoints = findNeighborsOnField(size);
-        validateAndAdd(x - 1, y - 1, surroundingPoints, size);
-        validateAndAdd(x - 1, y + 1, surroundingPoints, size);
-        validateAndAdd(x + 1, y - 1, surroundingPoints, size);
-        validateAndAdd(x + 1, y + 1, surroundingPoints, size);
-
-        return surroundingPoints;
+    public Cell translate(int tx, int ty) {
+        return new Cell(x + tx, y + ty);
     }
 
-    public Collection<Cell> findNeighborsOnField(int size) {
-        final Collection<Cell> surroundingPoints = new HashSet<>();
-        validateAndAdd(x + 1, y, surroundingPoints, size);
-        validateAndAdd(x - 1, y, surroundingPoints, size);
-        validateAndAdd(x, y + 1, surroundingPoints, size);
-        validateAndAdd(x, y - 1, surroundingPoints, size);
-
-        return surroundingPoints;
-    }
-
-    public Cell translate(Point p) {
-        return new Cell(x + p.x, y + p.y);
+    public Cell translate(int t, boolean horizontal) {
+        return horizontal ? new Cell(x + t, y) : new Cell(x, y + t);
     }
 
     public boolean isInside(int size) {
         return x >= 0 && x < size && y >= 0 && y < size;
+    }
+
+    public Collection<Cell> findNeighborsOnGridWithDiagonals(int gridSize) {
+        final Collection<Cell> surroundingPoints = findNeighborsOnGrid(gridSize);
+        validateAndAdd(x - 1, y - 1, surroundingPoints, gridSize);
+        validateAndAdd(x - 1, y + 1, surroundingPoints, gridSize);
+        validateAndAdd(x + 1, y - 1, surroundingPoints, gridSize);
+        validateAndAdd(x + 1, y + 1, surroundingPoints, gridSize);
+
+        return surroundingPoints;
+    }
+
+    public Collection<Cell> findNeighborsOnGrid(int gridSize) {
+        final Collection<Cell> surroundingPoints = new HashSet<>();
+        validateAndAdd(x + 1, y, surroundingPoints, gridSize);
+        validateAndAdd(x - 1, y, surroundingPoints, gridSize);
+        validateAndAdd(x, y + 1, surroundingPoints, gridSize);
+        validateAndAdd(x, y - 1, surroundingPoints, gridSize);
+
+        return surroundingPoints;
     }
 
     private void validateAndAdd(int x, int y, Collection<Cell> validPoints, int size) {
@@ -78,4 +81,5 @@ public class Cell {
         result = 31 * result + y;
         return result;
     }
+
 }

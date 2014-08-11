@@ -41,12 +41,16 @@ public class MaskedGameGrid {
         grid.get(p.x).set(p.y, value);
     }
 
-    public List<Cell> findNotShotPoints() {
+    public Collection<Cell> findNotShotPoints() {
         return filterGridCell(Arrays.asList(CellState.EMPTY, CellState.SHIP));
     }
 
-    public List<Cell> findDeadShips() {
+    public Collection<Cell> findDeadShips() {
         return filterGridCell(Arrays.asList(CellState.DEAD_SHIP));
+    }
+
+    public Collection<Cell> findHitShip(){
+        return filterGridCell(Arrays.asList(CellState.HIT_SHIP));
     }
 
     private List<Cell> filterGridCell(Collection<CellState> values) {

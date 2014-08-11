@@ -43,7 +43,7 @@ public class RandomShipLocator {
 
     private void removeAllPointsAround(Collection<Cell> field, Collection<Cell> shipLocation, int size) {
         for (Cell cell : shipLocation) {
-            Iterable<Cell> points = cell.findNeighborsOnFieldWithDiagonals(size);
+            Iterable<Cell> points = cell.findNeighborsOnGridWithDiagonals(size);
             for (Cell point : points) {
                 field.remove(point);
             }

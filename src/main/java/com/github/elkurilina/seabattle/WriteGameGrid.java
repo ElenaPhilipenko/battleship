@@ -1,6 +1,5 @@
 package com.github.elkurilina.seabattle;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -20,19 +19,19 @@ public class WriteGameGrid extends MaskedGameGrid {
         return super.getCellOpenState(cell);
     }
 
-    public ShotResult applyShot(Cell cell) {
-        CellState state = grid.get(cell.x).get(cell.y);
+    public boolean applyShot(Cell cell) {
+        final CellState state = grid.get(cell.x).get(cell.y);
         if (state == CellState.SHIP) {
             setCell(cell, CellState.HIT_SHIP);
             final Collection<Cell> ship = findShipByCell(cell);
             if (isShipDead(ship)) {
                 markShipAsDead(ship);
             }
-            return ShotResult.HIT;
+            return true;
         } else if (state == CellState.EMPTY) {
             setCell(cell, CellState.MISSED_SHOT);
         }
-        return ShotResult.MISSED;
+        return false;
     }
 
     public boolean hasAfloatShip() {
@@ -60,10 +59,10 @@ public class WriteGameGrid extends MaskedGameGrid {
         boolean shipPresentDown = true;
         int i = 0;
         while (shipPresentLeft || shipPresentRight || shipPresentDown || shipPresentUp) {
-            if (shipPresentLeft) shipPresentLeft = putIfShipCell(ship.translate(new Point(-i, 0)), shipCells);
-            if (shipPresentRight) shipPresentRight = putIfShipCell(ship.translate(new Point(i, 0)), shipCells);
-            if (shipPresentDown) shipPresentDown = putIfShipCell(ship.translate(new Point(0, -i)), shipCells);
-            if (shipPresentUp) shipPresentUp = putIfShipCell(ship.translate(new Point(0, i)), shipCells);
+            if (shipPresentLeft) shipPresentLeft = putIfShipCell(ship.translate(-i, 0), shipCells);
+            if (shipPresentRight) shipPresentRight = putIfShipCell(ship.translate(i, 0), shipCells);
+            if (shipPresentDown) shipPresentDown = putIfShipCell(ship.translate(0, -i), shipCells);
+            if (shipPresentUp) shipPresentUp = putIfShipCell(ship.translate(0, i), shipCells);
             i++;
         }
         return shipCells;

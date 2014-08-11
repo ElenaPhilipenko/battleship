@@ -5,10 +5,12 @@ import com.github.elkurilina.seabattle.Game;
 import com.github.elkurilina.seabattle.Player;
 import com.github.elkurilina.seabattle.WriteGameGrid;
 import com.github.elkurilina.seabattle.player.RandomPlayer;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static com.github.elkurilina.seabattle.Game.FIELD_SIZE;
@@ -19,6 +21,7 @@ import static com.github.elkurilina.seabattle.Game.SHIP_SIZES;
  */
 public class RandomPlayerTest {
     private RandomPlayer player;
+    private final Logger LOG = Logger.getLogger(RandomPlayer.class);
 
     @BeforeMethod
     public void createPlayer() {
@@ -44,17 +47,50 @@ public class RandomPlayerTest {
         Assert.assertEquals(fleet.size(), sum);
     }
 
-//    private double getMinDistanceBetweenShips(Ship s1, Ship s2) {
-//        double min = 100;
-//        for (Point p1 : s1.getParts()) {
-//            for (Point p2 : s2.getParts()) {
-//                double distance = Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2));
-//                min = Math.min(min, distance);
-//
-//            }
-//        }
-//        LOG.info(s1.toString() + " ---- " + s2.toString());
-//        LOG.info("distance: " + min);
-//        return min;
-//    }
+    @Test
+    public void testMakeRightShotAfterOneHit() {
+        final WriteGameGrid gameGrid = new WriteGameGrid(Arrays.asList(new Cell(0, 0), new Cell(0, 1)), 10);
+        gameGrid.applyShot(new Cell(0, 0));
+
+        Cell cell = player.makeShot(gameGrid.maskedGrid);
+
+        Assert.assertTrue(cell.equals(new Cell(1, 0)) || cell.equals(new Cell(0, 1)));
+    }
+
+    @Test
+    public void testShotNotIncludeAlreadyShotCell() {
+        final WriteGameGrid gameGrid = new WriteGameGrid(Arrays.asList(new Cell(3, 3), new Cell(3, 2)), 10);
+        gameGrid.applyShot(new Cell(3, 3));
+        gameGrid.applyShot(new Cell(3, 4));
+        gameGrid.applyShot(new Cell(2, 3));
+        gameGrid.applyShot(new Cell(4, 3));
+
+        Cell cell = player.makeShot(gameGrid.maskedGrid);
+
+        Assert.assertTrue(cell.equals(new Cell(3, 2)));
+    }
+
+    @Test
+    public void testMakeRightShotAfter2Hit() {
+        final WriteGameGrid gameGrid = new WriteGameGrid(Arrays.asList(new Cell(3, 3), new Cell(3, 2), new Cell(3, 1)), 10);
+        gameGrid.applyShot(new Cell(3, 3));
+        gameGrid.applyShot(new Cell(3, 2));
+
+        Cell cell = player.makeShot(gameGrid.maskedGrid);
+        LOG.info("Cell was selected: " + cell);
+        Assert.assertTrue(cell.equals(new Cell(3, 1)) || cell.equals(new Cell(3, 4)));
+    }
+
+    @Test
+    public void testMakeRightShotAfter3Hit() {
+        final WriteGameGrid gameGrid = new WriteGameGrid(Arrays.asList(new Cell(4, 3), new Cell(2, 3), new Cell(1, 3), new Cell(3, 3)), 10);
+        gameGrid.applyShot(new Cell(3, 3));
+        gameGrid.applyShot(new Cell(2, 3));
+        gameGrid.applyShot(new Cell(1, 3));
+
+        Cell cell = player.makeShot(gameGrid.maskedGrid);
+
+        Assert.assertTrue(cell.equals(new Cell(0, 3)) || cell.equals(new Cell(4, 3)));
+    }
+
 }
