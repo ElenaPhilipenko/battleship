@@ -1,7 +1,7 @@
 package com.github.elkurilina.seabattle.player;
 
 import com.github.elkurilina.seabattle.Cell;
-import com.github.elkurilina.seabattle.MaskedGameGrid;
+import com.github.elkurilina.seabattle.GameGrid;
 import com.github.elkurilina.seabattle.Player;
 
 import java.util.*;
@@ -21,7 +21,7 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Cell makeShot(MaskedGameGrid grid) {
+    public Cell makeShot(GameGrid grid) {
         final Collection<Cell> hitShip = grid.findHitShip();
         final Collection<Cell> notShotCells = grid.findNotShotPoints();
         final List<Cell> candidates;
@@ -35,7 +35,7 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Collection<Cell> getShips(Iterable<Integer> shipSizes) {
+    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes) {
         return new RandomShipLocator().createShips(shipSizes, size);
     }
 

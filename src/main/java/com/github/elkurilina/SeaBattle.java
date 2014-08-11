@@ -21,8 +21,8 @@ public class SeaBattle {
         final Player p1 = new RandomPlayer(FIELD_SIZE);
         final ConsolePlayer p2 = new ConsolePlayer(FIELD_SIZE);
 
-        final WriteGameGrid p1GameGrid = new WriteGameGrid(p1.getShips(SHIP_SIZES), FIELD_SIZE);
-        final WriteGameGrid p2GameGrid = new WriteGameGrid(p2.getShips(SHIP_SIZES), FIELD_SIZE);
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), FIELD_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), FIELD_SIZE);
 
         p2.setGreeds(p2GameGrid);
 

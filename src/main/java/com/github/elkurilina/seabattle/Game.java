@@ -2,13 +2,15 @@ package com.github.elkurilina.seabattle;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Elena Kurilina
  */
 public class Game {
     public static final int FIELD_SIZE = 10;
-    public static final Collection<Integer> SHIP_SIZES = Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1);
+    public static final Collection<Integer> SHIP_SIZES = Collections.unmodifiableList(
+            Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1));
 
     public String playGame(Player p1, Player p2, WriteGameGrid p1GameGrid, WriteGameGrid p2GameGrid) {
         while (!isGameEnded(p1GameGrid, p2GameGrid)) {
@@ -27,9 +29,6 @@ public class Game {
         }
     }
 
-    private boolean isGameGridValid(WriteGameGrid gameGrid) {
-        return false; //TODO: implement
-    }
 
     private boolean isGameEnded(WriteGameGrid f1, WriteGameGrid f2) {
         return !(f1.hasAfloatShip() && f2.hasAfloatShip());

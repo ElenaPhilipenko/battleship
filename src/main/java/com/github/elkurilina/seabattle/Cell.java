@@ -27,6 +27,10 @@ public class Cell {
         return x >= 0 && x < size && y >= 0 && y < size;
     }
 
+    public double distance(Cell c){
+        return Math.sqrt(Math.pow((x - c.x), 2) + Math.pow((y - c.y), 2));
+    }
+
     public Collection<Cell> findNeighborsOnGridWithDiagonals(int gridSize) {
         final Collection<Cell> surroundingPoints = findNeighborsOnGrid(gridSize);
         validateAndAdd(x - 1, y - 1, surroundingPoints, gridSize);

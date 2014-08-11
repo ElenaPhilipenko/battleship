@@ -7,9 +7,9 @@ import java.util.Collection;
  */
 public interface Player {
 
-    Cell makeShot(MaskedGameGrid grid);
+    Cell makeShot(GameGrid grid);
 
-    public Collection<Cell> getShips(Iterable<Integer> shipSizes);
+    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes);
 
     String getName();
 

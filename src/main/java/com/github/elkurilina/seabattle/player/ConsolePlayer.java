@@ -34,13 +34,13 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Cell makeShot(MaskedGameGrid grid) {
+    public Cell makeShot(GameGrid grid) {
         printGrid(grid);
-        System.out.println("You game grid: ");
+        System.out.println("You game values: ");
         printGrid(myGreed);
         System.out.println("Please enter coordinates of you shot in format: x y");
         try {
-            return parsePoint(size);
+            return parseCell(size);
         } catch (Exception e) {
             System.out.print("Can not parse move.");
             return makeShot(grid);
@@ -48,9 +48,9 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Collection<Cell> getShips(Iterable<Integer> shipSizes) {
-        final Collection<Cell> shipCells;
-        System.out.println("Do you want create random game grid? (y/n)");
+    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes) {
+        final Collection<Collection<Cell>> shipCells;
+        System.out.println("Do you want create random game values? (y/n)");
         try {
             if (br.readLine().contains("n")) {
                 shipCells = createSips(shipSizes, size);
@@ -73,22 +73,22 @@ public class ConsolePlayer implements Player {
         this.myGreed = myGreed;
     }
 
-    private Collection<Cell> createSips(Iterable<Integer> shipSizes, int size) {
-        final Collection<Cell> shipCells = new HashSet<>();
+    private Collection<Collection<Cell>> createSips(Iterable<Integer> shipSizes, int size) {
+        final Collection<Collection<Cell>> shipCells = new HashSet<>();
         for (Integer shipSize : shipSizes) {
             final Set<Cell> shipLocation = new HashSet<>();
             System.out.println("Please, input location points for ship with size: " + shipSize);
             for (int i = 0; i < shipSize; i++) {
-                addParsedPoint(shipLocation, i, size);
+                addParsedCell(shipLocation, i, size);
             }
-            shipCells.addAll(shipLocation);
+            shipCells.add(shipLocation);
 
         }
         return shipCells;
     }
 
 
-    private Cell parsePoint(int max) throws Exception {
+    private Cell parseCell(int max) throws Exception {
         System.out.println("Please enter in format: x y ");
         final String shot = br.readLine().replace(" ", "");
         final Integer x = Integer.parseInt(String.valueOf(shot.charAt(0)));
@@ -99,16 +99,16 @@ public class ConsolePlayer implements Player {
         return new Cell(x, y);
     }
 
-    private void addParsedPoint(Collection<Cell> shipLocation, int i, int size) {
+    private void addParsedCell(Collection<Cell> shipLocation, int i, int size) {
         System.out.println("point " + (i + 1));
         try {
-            shipLocation.add(parsePoint(size));
+            shipLocation.add(parseCell(size));
         } catch (Exception e) {
-            addParsedPoint(shipLocation, i, size);
+            addParsedCell(shipLocation, i, size);
         }
     }
 
-    public void printGrid(MaskedGameGrid grid) {
+    public void printGrid(GameGrid grid) {
         System.out.println("  0 1 2 3 4 5 6 7 8 9");
         for (int i = 0; i < size; i++) {
             System.out.print(i + " ");

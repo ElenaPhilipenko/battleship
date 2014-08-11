@@ -2,17 +2,26 @@ package com.github.elkurilina.seabattle;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Elena Kurilina
  */
-public class WriteGameGrid extends MaskedGameGrid {
+public class WriteGameGrid extends GameGrid {
 
-    public final MaskedGameGrid maskedGrid;
+    public final GameGrid maskedGrid;
 
-    public WriteGameGrid(Collection<Cell> shipLocation, int gridSize) {
+    public static WriteGameGrid createGameGidWithShips(Collection<Collection<Cell>> shipLocation, int gridSize) {
+        if (GameGridValidator.isShipLocationsValid(shipLocation)) {
+            return new WriteGameGrid(shipLocation, gridSize);
+        } else {
+            throw new IllegalArgumentException("Ship location is not valid");
+        }
+    }
+
+    public WriteGameGrid(Collection<Collection<Cell>> shipLocation, int gridSize) {
         super(shipLocation, gridSize);
-        maskedGrid = new MaskedGameGrid(grid);
+        maskedGrid = new GameGrid(values, cells);
     }
 
     public CellState getCellState(Cell cell) {
@@ -35,7 +44,7 @@ public class WriteGameGrid extends MaskedGameGrid {
     }
 
     public boolean hasAfloatShip() {
-        for (java.util.List<CellState> row : grid) {
+        for (List<CellState> row : values) {
             if (row.contains(CellState.SHIP)) {
                 return true;
             }
@@ -75,6 +84,5 @@ public class WriteGameGrid extends MaskedGameGrid {
         }
         return false;
     }
-
 
 }
