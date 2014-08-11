@@ -20,7 +20,7 @@ public class WriteGameGrid extends MaskedGameGrid {
     }
 
     public boolean applyShot(Cell cell) {
-        final CellState state = grid.get(cell.x).get(cell.y);
+        final CellState state = getCellOpenState(cell);
         if (state == CellState.SHIP) {
             setCell(cell, CellState.HIT_SHIP);
             final Collection<Cell> ship = findShipByCell(cell);

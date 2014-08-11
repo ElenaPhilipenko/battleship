@@ -6,7 +6,7 @@ import java.util.HashSet;
 /**
  * @author Elena Kurilina
  */
-public class Cell{
+public class Cell {
     public final int x;
     public final int y;
 
@@ -68,18 +68,18 @@ public class Cell{
     }
 
     @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Cell{" +
                 "x=" + x +
                 ", y=" + y +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        return result;
     }
 
 }

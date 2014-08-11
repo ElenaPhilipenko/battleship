@@ -42,21 +42,21 @@ public class MaskedGameGrid {
     }
 
     public Collection<Cell> findNotShotPoints() {
-        return filterGridCell(Arrays.asList(CellState.EMPTY, CellState.SHIP));
+        return filterGridCells(Arrays.asList(CellState.EMPTY, CellState.SHIP));
     }
 
     public Collection<Cell> findDeadShips() {
-        return filterGridCell(Arrays.asList(CellState.DEAD_SHIP));
+        return filterGridCells(Arrays.asList(CellState.DEAD_SHIP));
     }
 
     public Collection<Cell> findHitShip(){
-        return filterGridCell(Arrays.asList(CellState.HIT_SHIP));
+        return filterGridCells(Arrays.asList(CellState.HIT_SHIP));
     }
 
-    private List<Cell> filterGridCell(Collection<CellState> values) {
+    private List<Cell> filterGridCells(Collection<CellState> values) {
         final List<Cell> empty = new ArrayList<>();
-        for (int i = 0; i < grid.size(); i++) {
-            for (int j = 0; j < grid.size(); j++) {
+        for (int i = 0; i < getSize(); i++) {
+            for (int j = 0; j < getSize(); j++) {
                 final Cell current = new Cell(i, j);
                 final CellState value = getCellOpenState(current);
                 if (values.stream().filter(v -> v == value).count() > 0) {

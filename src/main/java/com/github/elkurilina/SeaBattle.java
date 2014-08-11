@@ -1,5 +1,8 @@
-package com.github.elkurilina.seabattle;
+package com.github.elkurilina;
 
+import com.github.elkurilina.seabattle.Game;
+import com.github.elkurilina.seabattle.Player;
+import com.github.elkurilina.seabattle.WriteGameGrid;
 import com.github.elkurilina.seabattle.player.ConsolePlayer;
 import com.github.elkurilina.seabattle.player.RandomPlayer;
 

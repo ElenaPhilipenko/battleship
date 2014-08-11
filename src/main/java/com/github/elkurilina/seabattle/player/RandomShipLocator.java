@@ -13,45 +13,34 @@ public class RandomShipLocator {
     public Collection<Cell> createShips(Iterable<Integer> shipSizes, int gridSize) {
         final Collection<Cell> shipLocations = new HashSet<>();
         final List<Cell> field = createPossiblePoints(gridSize);
-        for (Integer shipSize : shipSizes) {
-            shipLocations.addAll(createShip(field, shipSize, gridSize));
-        }
+        shipSizes.forEach(size -> shipLocations.addAll(createShip(field, size, gridSize)));
         return shipLocations;
     }
 
-    private Collection<Cell> createShip(List<Cell> field, int shipSize, int size) {
-        final Set<Cell> shipLocation = findShipLocation(field, shipSize);
-        field.removeAll(shipLocation);
-        removeAllPointsAround(field, shipLocation, size);
+    private Collection<Cell> createShip(List<Cell> grid, int shipSize, int size) {
+        final Collection<Cell> shipLocation = locateShip(grid, shipSize);
+        grid.removeAll(shipLocation);
+        shipLocation.forEach(cell -> grid.removeAll(cell.findNeighborsOnGridWithDiagonals(size)));
         return shipLocation;
     }
 
-    private Set<Cell> findShipLocation(List<Cell> field, int shipSize) {
-        final Cell head = field.get(random.nextInt(field.size()));
+    private Collection<Cell> locateShip(List<Cell> grid, int shipSize) {
+        final Cell head = grid.get(random.nextInt(grid.size()));
         final boolean horizontal = random.nextBoolean();
-        Set<Cell> shipLocation = new HashSet<>(shipSize);
+        Collection<Cell> shipLocation = new HashSet<>(shipSize);
         for (int i = 0; i < shipSize; i++) {
-            final Cell option = horizontal ? new Cell(head.x, head.y + i) : new Cell(head.x + i, head.y);
-            if (field.contains(option)) {
+            final Cell option = head.translate(i, horizontal);
+            if (grid.contains(option)) {
                 shipLocation.add(option);
             } else {
-                shipLocation = findShipLocation(field, shipSize);
+                shipLocation = locateShip(grid, shipSize);
             }
         }
         return shipLocation;
-    }
-
-    private void removeAllPointsAround(Collection<Cell> field, Collection<Cell> shipLocation, int size) {
-        for (Cell cell : shipLocation) {
-            Iterable<Cell> points = cell.findNeighborsOnGridWithDiagonals(size);
-            for (Cell point : points) {
-                field.remove(point);
-            }
-        }
     }
 
     private List<Cell> createPossiblePoints(int size) {
-        final java.util.List<Cell> field = new ArrayList<>();
+        final List<Cell> field = new ArrayList<>();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 field.add(new Cell(x, y));

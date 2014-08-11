@@ -15,8 +15,8 @@ import java.util.*;
  * @author Elena Kurilina
  */
 
-public class FleetTest {
-    private static final Logger LOG = Logger.getLogger(FleetTest.class);
+public class GameGridTest {
+    private static final Logger LOG = Logger.getLogger(GameGridTest.class);
 
     @DataProvider(name = "shipSizes")
     public static Iterator<Object[]> getShipSizes() {
