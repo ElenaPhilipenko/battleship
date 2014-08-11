@@ -22,10 +22,8 @@ public class Game {
 
     private void makeShots(Player p1, WriteGameGrid writeGameGrid) {
         boolean hit = true;
-        while (hit) {
-            final ShotResult result = writeGameGrid.applyShot(p1.makeShot(writeGameGrid.maskedGrid));
-            p1.handleShotResult(result);
-            hit = (result == ShotResult.HIT || result == ShotResult.SHIP_IS_DEAD);
+        while (hit && writeGameGrid.hasAfloatShip()) {
+            hit = writeGameGrid.applyShot(p1.makeShot(writeGameGrid.maskedGrid));
         }
     }
 
@@ -34,7 +32,7 @@ public class Game {
     }
 
     private boolean isGameEnded(WriteGameGrid f1, WriteGameGrid f2) {
-        return !f1.hasAfloatShip() || !f2.hasAfloatShip();
+        return !(f1.hasAfloatShip() && f2.hasAfloatShip());
     }
 
 
