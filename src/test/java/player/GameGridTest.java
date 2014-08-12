@@ -1,7 +1,8 @@
 package player;
 
-import com.github.elkurilina.seabattle.Cell;
-import com.github.elkurilina.seabattle.CellState;
+import com.github.elkurilina.seabattle.Game;
+import com.github.elkurilina.seabattle.GridSquare;
+import com.github.elkurilina.seabattle.SquareState;
 import com.github.elkurilina.seabattle.WriteGameGrid;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -33,21 +34,22 @@ public class GameGridTest extends AbstractTest {
 //              0 1 2 3 4 5 6 7 8 9
 
     @Test
-    public void testFindEmptyCells() {
-        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 100);
+    public void testFindEmptySquares() {
+        Assert.assertEquals(gameGrid.findNotShotSquares().size(), 100);
     }
 
     @Test
-    public void testFindEmptyCellsAfterShots() {
-        gameGrid.applyShot(new Cell(6, 9));
-        gameGrid.applyShot(new Cell(0, 1));
-        gameGrid.applyShot(new Cell(0, 2));
-        Assert.assertEquals(gameGrid.findNotShotPoints().size(), 97);
+    public void testFindEmptySquaresAfterShots() {
+        gameGrid.applyShot(new GridSquare(6, 9));
+        gameGrid.applyShot(new GridSquare(0, 1));
+        gameGrid.applyShot(new GridSquare(0, 2));
+
+        Assert.assertEquals(gameGrid.findNotShotSquares().size(), 97);
     }
 
     @Test
     public void testCreateGameGridWithShips() {
-        Assert.assertEquals(gameGrid.getCellState(new Cell(0, 0)), CellState.SHIP);
+        Assert.assertEquals(gameGrid.getSquareState(new GridSquare(0, 0)), SquareState.SHIP);
     }
 
     @Test
@@ -64,8 +66,8 @@ public class GameGridTest extends AbstractTest {
 
     @Test
     public void testMarkShipAsDead() {
-        gameGrid.applyShot(new Cell(0, 0));
-        gameGrid.applyShot(new Cell(0, 1));
+        gameGrid.applyShot(new GridSquare(0, 0));
+        gameGrid.applyShot(new GridSquare(0, 1));
 
         Assert.assertEquals(gameGrid.findDeadShips().size(), 2);
     }
@@ -77,7 +79,7 @@ public class GameGridTest extends AbstractTest {
 
     @Test
     public void testNotMarkHitShipAsDead() {
-        gameGrid.applyShot(new Cell(0, 0));
+        gameGrid.applyShot(new GridSquare(0, 0));
 
         Assert.assertEquals(gameGrid.findDeadShips().size(), 0);
     }
@@ -86,8 +88,9 @@ public class GameGridTest extends AbstractTest {
     @Test
     public void testFindAllDeadShip() {
         fleet.forEach(ship -> ship.forEach(gameGrid::applyShot));
+        int amount = Game.SHIP_SIZES.stream().reduce(0, (a, b) -> a + b);
 
-        Assert.assertEquals(gameGrid.findDeadShips().size(), 20);
+        Assert.assertEquals(gameGrid.findDeadShips().size(), amount);
     }
 
 

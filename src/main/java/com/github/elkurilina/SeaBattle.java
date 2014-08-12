@@ -8,7 +8,7 @@ import com.github.elkurilina.seabattle.player.RandomPlayer;
 
 import java.io.IOException;
 
-import static com.github.elkurilina.seabattle.Game.FIELD_SIZE;
+import static com.github.elkurilina.seabattle.Game.GRID_SIZE;
 import static com.github.elkurilina.seabattle.Game.SHIP_SIZES;
 
 /**
@@ -18,11 +18,11 @@ public class SeaBattle {
 
     public static void main(String[] args) throws IOException {
         final Game game = new Game();
-        final Player p1 = new RandomPlayer(FIELD_SIZE);
-        final ConsolePlayer p2 = new ConsolePlayer(FIELD_SIZE);
+        final Player p1 = new RandomPlayer(GRID_SIZE);
+        final ConsolePlayer p2 = new ConsolePlayer(GRID_SIZE);
 
-        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), FIELD_SIZE);
-        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), FIELD_SIZE);
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), GRID_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), GRID_SIZE);
 
         p2.setGreeds(p2GameGrid);
 

@@ -1,6 +1,6 @@
 package com.github.elkurilina.seabattle.player;
 
-import com.github.elkurilina.seabattle.Cell;
+import com.github.elkurilina.seabattle.GridSquare;
 
 import java.util.*;
 
@@ -10,26 +10,26 @@ import java.util.*;
 public class RandomShipLocator {
     private final Random random = new Random();
 
-    public Collection<Collection<Cell>> createShips(Iterable<Integer> shipSizes, int gridSize) {
-        final Collection<Collection<Cell>> shipLocations = new HashSet<>();
-        final List<Cell> field = createPossiblePoints(gridSize);
-        shipSizes.forEach(size -> shipLocations.add(createShip(field, size, gridSize)));
+    public Collection<Collection<GridSquare>> createShips(Iterable<Integer> shipSizes, int gridSize) {
+        final Collection<Collection<GridSquare>> shipLocations = new HashSet<>();
+        final List<GridSquare> grid = createPossiblePoints(gridSize);
+        shipSizes.forEach(size -> shipLocations.add(createShip(grid, size, gridSize)));
         return shipLocations;
     }
 
-    private Collection<Cell> createShip(List<Cell> grid, int shipSize, int size) {
-        final Collection<Cell> shipLocation = locateShip(grid, shipSize);
+    private Collection<GridSquare> createShip(List<GridSquare> grid, int shipSize, int size) {
+        final Collection<GridSquare> shipLocation = locateShip(grid, shipSize);
         grid.removeAll(shipLocation);
-        shipLocation.forEach(cell -> grid.removeAll(cell.findNeighborsOnGridWithDiagonals(size)));
+        shipLocation.forEach(square -> grid.removeAll(square.findNeighborsOnGridWithDiagonals(size)));
         return shipLocation;
     }
 
-    private Collection<Cell> locateShip(List<Cell> grid, int shipSize) {
-        final Cell head = grid.get(random.nextInt(grid.size()));
+    private Collection<GridSquare> locateShip(List<GridSquare> grid, int shipSize) {
+        final GridSquare head = grid.get(random.nextInt(grid.size()));
         final boolean horizontal = random.nextBoolean();
-        Collection<Cell> shipLocation = new HashSet<>(shipSize);
+        Collection<GridSquare> shipLocation = new HashSet<>(shipSize);
         for (int i = 0; i < shipSize; i++) {
-            final Cell option = head.translate(i, horizontal);
+            final GridSquare option = head.translate(i, horizontal);
             if (grid.contains(option)) {
                 shipLocation.add(option);
             } else {
@@ -39,11 +39,11 @@ public class RandomShipLocator {
         return shipLocation;
     }
 
-    private List<Cell> createPossiblePoints(int size) {
-        final List<Cell> field = new ArrayList<>();
+    private List<GridSquare> createPossiblePoints(int size) {
+        final List<GridSquare> field = new ArrayList<>();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                field.add(new Cell(x, y));
+                field.add(new GridSquare(x, y));
             }
         }
         return field;

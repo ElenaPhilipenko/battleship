@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 import java.util.Collection;
 
-import static com.github.elkurilina.seabattle.Game.FIELD_SIZE;
+import static com.github.elkurilina.seabattle.Game.GRID_SIZE;
 import static com.github.elkurilina.seabattle.Game.SHIP_SIZES;
 
 /**
@@ -35,23 +35,23 @@ public class RandomPlayerTest extends AbstractTest {
 
     @BeforeMethod
     public void createPlayer() {
-        player = new RandomPlayer(10);
+        player = new RandomPlayer(Game.GRID_SIZE);
     }
 
     @Test
     public void testPlayGame() {
         Game game = new Game();
-        final Player p2 = new RandomPlayer(FIELD_SIZE);
-        final Player p1 = new RandomPlayer(FIELD_SIZE);
+        final Player p2 = new RandomPlayer(GRID_SIZE);
+        final Player p1 = new RandomPlayer(GRID_SIZE);
 
-        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), FIELD_SIZE);
-        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), FIELD_SIZE);
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), GRID_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), GRID_SIZE);
         game.playGame(p1, p2, p1GameGrid, p2GameGrid);
     }
 
     @Test
     public void testSizeOfCreatesShips() {
-        final Collection<Collection<Cell>> fleet = player.getShips(Game.SHIP_SIZES);
+        final Collection<Collection<GridSquare>> fleet = player.getShips(Game.SHIP_SIZES);
 
         int sum = SHIP_SIZES.size();
         Assert.assertEquals(fleet.size(), sum);
@@ -59,7 +59,7 @@ public class RandomPlayerTest extends AbstractTest {
 
     @Test
     public void testCreatesShipsAreValid() {
-        final Collection<Collection<Cell>> fleet = player.getShips(Game.SHIP_SIZES);
+        final Collection<Collection<GridSquare>> fleet = player.getShips(Game.SHIP_SIZES);
 
         Assert.assertTrue(GameGridValidator.isShipLocationsValid(fleet));
     }
@@ -67,46 +67,47 @@ public class RandomPlayerTest extends AbstractTest {
     @Test
     public void testMakeRightShotAfterOneHit() {
         final WriteGameGrid gameGrid = createGrid();
-        gameGrid.applyShot(new Cell(0, 0));
+        gameGrid.applyShot(new GridSquare(0, 0));
 
-        Cell cell = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
 
-        Assert.assertTrue(cell.equals(new Cell(1, 0)) || cell.equals(new Cell(0, 1)));
+        Assert.assertTrue(gridSquare.equals(new GridSquare(1, 0)) || gridSquare.equals(new GridSquare(0, 1)));
     }
 
     @Test
     public void testShotNotIncludeAlreadyShotCell() {
         final WriteGameGrid gameGrid = createGrid();
-        gameGrid.applyShot(new Cell(9, 3));
-        gameGrid.applyShot(new Cell(9, 2));
-        gameGrid.applyShot(new Cell(8, 3));
+        gameGrid.applyShot(new GridSquare(9, 3));
+        gameGrid.applyShot(new GridSquare(9, 2));
+        gameGrid.applyShot(new GridSquare(8, 3));
 
-        Cell cell = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
 
-        Assert.assertTrue(cell.equals(new Cell(9, 4)));
+        Assert.assertTrue(gridSquare.equals(new GridSquare(9, 4)));
     }
 
     @Test
     public void testMakeRightShotAfter2Hit() {
-        final WriteGameGrid gameGrid = createGrid(); //convert(new Cell(4, 1), new Cell(4, 2), new Cell(4, 3), new Cell(4, 4))
-        gameGrid.applyShot(new Cell(4, 3));
-        gameGrid.applyShot(new Cell(4, 2));
+        final WriteGameGrid gameGrid = createGrid();
+        //convert(new GridSquare(4, 1), new GridSquare(4, 2), new GridSquare(4, 3), new GridSquare(4, 4))
+        gameGrid.applyShot(new GridSquare(4, 3));
+        gameGrid.applyShot(new GridSquare(4, 2));
 
-        Cell cell = player.makeShot(gameGrid.maskedGrid);
-        LOG.info("Cell was selected: " + cell);
-        Assert.assertTrue(cell.equals(new Cell(4, 1)) || cell.equals(new Cell(4, 4)));
+        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        LOG.info("GridSquare was selected: " + gridSquare);
+        Assert.assertTrue(gridSquare.equals(new GridSquare(4, 1)) || gridSquare.equals(new GridSquare(4, 4)));
     }
 
     @Test
     public void testMakeRightShotAfter3Hit() {
         final WriteGameGrid gameGrid = createGrid();
-        gameGrid.applyShot(new Cell(4, 3));
-        gameGrid.applyShot(new Cell(4, 2));
-        gameGrid.applyShot(new Cell(4, 4));
+        gameGrid.applyShot(new GridSquare(4, 3));
+        gameGrid.applyShot(new GridSquare(4, 2));
+        gameGrid.applyShot(new GridSquare(4, 4));
 
-        Cell cell = player.makeShot(gameGrid.maskedGrid);
-        LOG.info("Cell was selected: " + cell);
-        Assert.assertTrue(cell.equals(new Cell(4, 1)) || cell.equals(new Cell(4, 5)));
+        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        LOG.info("GridSquare was selected: " + gridSquare);
+        Assert.assertTrue(gridSquare.equals(new GridSquare(4, 1)) || gridSquare.equals(new GridSquare(4, 5)));
 
     }
 

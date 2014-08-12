@@ -1,6 +1,6 @@
 package com.github.elkurilina.seabattle.player;
 
-import com.github.elkurilina.seabattle.Cell;
+import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.GameGrid;
 import com.github.elkurilina.seabattle.Player;
 
@@ -21,21 +21,21 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Cell makeShot(GameGrid grid) {
-        final Collection<Cell> hitShip = grid.findHitShip();
-        final Collection<Cell> notShotCells = grid.findNotShotPoints();
-        final List<Cell> candidates;
+    public GridSquare makeShot(GameGrid grid) {
+        final Collection<GridSquare> hitShip = grid.findHitShip();
+        final Collection<GridSquare> notShotGridSquares = grid.findNotShotSquares();
+        final List<GridSquare> candidates;
         if (!hitShip.isEmpty()) {
-            candidates =  findBestCandidatesAround(hitShip).stream().filter(notShotCells::contains).collect(Collectors.toList());
+            candidates =  findBestCandidatesAround(hitShip).stream().filter(notShotGridSquares::contains).collect(Collectors.toList());
         } else {
-            notShotCells.removeAll(findCellsAround(grid.findDeadShips()));
-            candidates = new ArrayList<>(notShotCells);
+            notShotGridSquares.removeAll(findSquaresAround(grid.findDeadShips()));
+            candidates = new ArrayList<>(notShotGridSquares);
         }
         return candidates.get(random.nextInt(candidates.size()));
     }
 
     @Override
-    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes) {
+    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes) {
         return new RandomShipLocator().createShips(shipSizes, size);
     }
 
@@ -44,18 +44,18 @@ public class RandomPlayer implements Player {
         return BOT_PLAYER;
     }
 
-    private Collection<Cell> findCellsAround(Collection<Cell> deadShips) {
-        final Collection<Cell> allCells = new HashSet<>();
-        deadShips.stream().forEach(cell -> allCells.addAll(cell.findNeighborsOnGridWithDiagonals(size)));
-        allCells.addAll(deadShips);
-        return allCells;
+    private Collection<GridSquare> findSquaresAround(Collection<GridSquare> deadShips) {
+        final Collection<GridSquare> allGridSquares = new HashSet<>();
+        deadShips.stream().forEach(s -> allGridSquares.addAll(s.findNeighborsOnGridWithDiagonals(size)));
+        allGridSquares.addAll(deadShips);
+        return allGridSquares;
     }
 
-    private Collection<Cell> findBestCandidatesAround(Collection<Cell> hitShip) {
+    private Collection<GridSquare> findBestCandidatesAround(Collection<GridSquare> hitShip) {
         if (hitShip.size() > 1) {
-            final Collection<Cell> candidates = new HashSet<>();
-            final Cell min = hitShip.stream().min(new CellComparator()).get();
-            final Cell max = hitShip.stream().max(new CellComparator()).get();
+            final Collection<GridSquare> candidates = new HashSet<>();
+            final GridSquare min = hitShip.stream().min(new SquareComparator()).get();
+            final GridSquare max = hitShip.stream().max(new SquareComparator()).get();
             final boolean horizontal = max.x - min.x != 0;
             candidates.add(max.translate(1, horizontal));
             candidates.add(min.translate(-1, horizontal));
@@ -65,10 +65,10 @@ public class RandomPlayer implements Player {
         }
     }
 
-    private static class CellComparator implements Comparator<Cell> {
+    private static class SquareComparator implements Comparator<GridSquare> {
 
         @Override
-        public int compare(Cell o1, Cell o2) {
+        public int compare(GridSquare o1, GridSquare o2) {
             if (o1.x == o2.x && o1.y == o2.y) {
                 return 0;
             } else {

@@ -12,14 +12,14 @@ import java.util.*;
  */
 public class ConsolePlayer implements Player {
 
-    private static final Map<CellState, String> printValues = new HashMap<>();
+    private static final Map<SquareState, String> printValues = new HashMap<>();
     static {
-        printValues.put(CellState.MISSED_SHOT, ".");
-        printValues.put(CellState.EMPTY, "-");
-        printValues.put(CellState.HIDDEN, "?");
-        printValues.put(CellState.HIT_SHIP, "!");
-        printValues.put(CellState.DEAD_SHIP, "x");
-        printValues.put(CellState.SHIP, "s");
+        printValues.put(SquareState.MISS, ".");
+        printValues.put(SquareState.EMPTY, "-");
+        printValues.put(SquareState.HIDDEN, "?");
+        printValues.put(SquareState.HIT, "!");
+        printValues.put(SquareState.DEAD_SHIP, "x");
+        printValues.put(SquareState.SHIP, "s");
     }
 
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -34,13 +34,13 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Cell makeShot(GameGrid grid) {
+    public GridSquare makeShot(GameGrid grid) {
         printGrid(grid);
         System.out.println("You game values: ");
         printGrid(myGreed);
         System.out.println("Please enter coordinates of you shot in format: x y");
         try {
-            return parseCell(size);
+            return parseSquare(size);
         } catch (Exception e) {
             System.out.print("Can not parse move.");
             return makeShot(grid);
@@ -48,20 +48,20 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes) {
-        final Collection<Collection<Cell>> shipCells;
+    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes) {
+        final Collection<Collection<GridSquare>> ship;
         System.out.println("Do you want create random game values? (y/n)");
         try {
             if (br.readLine().contains("n")) {
-                shipCells = createSips(shipSizes, size);
+                ship = createSips(shipSizes, size);
             } else {
-                shipCells = new RandomShipLocator().createShips(shipSizes, size);
+                ship = new RandomShipLocator().createShips(shipSizes, size);
             }
         } catch (IOException e) {
             System.out.println("Try again.");
             return getShips(shipSizes);
         }
-        return shipCells;
+        return ship;
     }
 
     @Override
@@ -73,22 +73,22 @@ public class ConsolePlayer implements Player {
         this.myGreed = myGreed;
     }
 
-    private Collection<Collection<Cell>> createSips(Iterable<Integer> shipSizes, int size) {
-        final Collection<Collection<Cell>> shipCells = new HashSet<>();
+    private Collection<Collection<GridSquare>> createSips(Iterable<Integer> shipSizes, int size) {
+        final Collection<Collection<GridSquare>> ship = new HashSet<>();
         for (Integer shipSize : shipSizes) {
-            final Set<Cell> shipLocation = new HashSet<>();
+            final Set<GridSquare> shipLocation = new HashSet<>();
             System.out.println("Please, input location points for ship with size: " + shipSize);
             for (int i = 0; i < shipSize; i++) {
-                addParsedCell(shipLocation, i, size);
+                addParsedSquare(shipLocation, i, size);
             }
-            shipCells.add(shipLocation);
+            ship.add(shipLocation);
 
         }
-        return shipCells;
+        return ship;
     }
 
 
-    private Cell parseCell(int max) throws Exception {
+    private GridSquare parseSquare(int max) throws Exception {
         System.out.println("Please enter in format: x y ");
         final String shot = br.readLine().replace(" ", "");
         final Integer x = Integer.parseInt(String.valueOf(shot.charAt(0)));
@@ -96,15 +96,15 @@ public class ConsolePlayer implements Player {
         if (x < 0 || x > max || y < 0 || y > max) {
             throw new IllegalArgumentException("Wring point");
         }
-        return new Cell(x, y);
+        return new GridSquare(x, y);
     }
 
-    private void addParsedCell(Collection<Cell> shipLocation, int i, int size) {
+    private void addParsedSquare(Collection<GridSquare> shipLocation, int i, int size) {
         System.out.println("point " + (i + 1));
         try {
-            shipLocation.add(parseCell(size));
+            shipLocation.add(parseSquare(size));
         } catch (Exception e) {
-            addParsedCell(shipLocation, i, size);
+            addParsedSquare(shipLocation, i, size);
         }
     }
 
@@ -113,7 +113,7 @@ public class ConsolePlayer implements Player {
         for (int i = 0; i < size; i++) {
             System.out.print(i + " ");
             for (int j = 0; j < size; j++) {
-                System.out.print(printValues.get(grid.getCellState(new Cell(i, j))));
+                System.out.print(printValues.get(grid.getSquareState(new GridSquare(i, j))));
                 System.out.print(" ");
             }
             System.out.print(i + "\n");

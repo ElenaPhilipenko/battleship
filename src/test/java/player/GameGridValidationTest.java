@@ -1,6 +1,6 @@
 package player;
 
-import com.github.elkurilina.seabattle.Cell;
+import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.GameGridValidator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -20,24 +20,24 @@ public class GameGridValidationTest extends AbstractTest {
 
     @Test
     public void testDetectWrongAmountOfShips() {
-        final Collection<Collection<Cell>> invalid = new ArrayList<>();
-        invalid.add(convert(new Cell(0, 0), new Cell(0, 1)));
+        final Collection<Collection<GridSquare>> invalid = new ArrayList<>();
+        invalid.add(convert(new GridSquare(0, 0), new GridSquare(0, 1)));
         Assert.assertFalse(GameGridValidator.isShipLocationsValid(invalid));
     }
 
     @Test
     public void testDetectWrongShipSizes() {
-        final Collection<Collection<Cell>> invalid = new ArrayList<>();
-        invalid.add(convert(new Cell(0, 0)));
-        invalid.add(convert(new Cell(0, 2)));
-        invalid.add(convert(new Cell(0, 4)));
-        invalid.add(convert(new Cell(0, 6)));
-        invalid.add(convert(new Cell(0, 8)));
-        invalid.add(convert(new Cell(2, 8)));
-        invalid.add(convert(new Cell(2, 6)));
-        invalid.add(convert(new Cell(2, 4)));
-        invalid.add(convert(new Cell(2, 2)));
-        invalid.add(convert(new Cell(2, 0)));
+        final Collection<Collection<GridSquare>> invalid = new ArrayList<>();
+        invalid.add(convert(new GridSquare(0, 0)));
+        invalid.add(convert(new GridSquare(0, 2)));
+        invalid.add(convert(new GridSquare(0, 4)));
+        invalid.add(convert(new GridSquare(0, 6)));
+        invalid.add(convert(new GridSquare(0, 8)));
+        invalid.add(convert(new GridSquare(2, 8)));
+        invalid.add(convert(new GridSquare(2, 6)));
+        invalid.add(convert(new GridSquare(2, 4)));
+        invalid.add(convert(new GridSquare(2, 2)));
+        invalid.add(convert(new GridSquare(2, 0)));
         Assert.assertFalse(GameGridValidator.isShipLocationsValid(invalid));
     }
 
@@ -55,18 +55,18 @@ public class GameGridValidationTest extends AbstractTest {
 //              0 1 2 3 4 5 6 7 8 9
     @Test
     public void testDetectWrongDistance() {
-        final Collection<Collection<Cell>> fleet = new ArrayList<>();
+        final Collection<Collection<GridSquare>> fleet = new ArrayList<>();
 
-        fleet.add(convert(new Cell(1, 5)));
-        fleet.add(convert(new Cell(3, 6)));
-        fleet.add(convert(new Cell(6, 9)));
-        fleet.add(convert(new Cell(8, 9)));
-        fleet.add(convert(new Cell(0, 0), new Cell(0, 1)));
-        fleet.add(convert(new Cell(9, 3), new Cell(9, 4)));
-        fleet.add(convert(new Cell(9, 1), new Cell(8, 1)));
-        fleet.add(convert(new Cell(0, 7), new Cell(1, 7), new Cell(2, 7)));
-        fleet.add(convert(new Cell(6, 2), new Cell(6, 3), new Cell(6, 4)));
-        fleet.add(convert(new Cell(4, 1), new Cell(4, 2), new Cell(4, 3), new Cell(4, 4)));
+        fleet.add(convert(new GridSquare(1, 5)));
+        fleet.add(convert(new GridSquare(3, 6)));
+        fleet.add(convert(new GridSquare(6, 9)));
+        fleet.add(convert(new GridSquare(8, 9)));
+        fleet.add(convert(new GridSquare(0, 0), new GridSquare(0, 1)));
+        fleet.add(convert(new GridSquare(9, 3), new GridSquare(9, 4)));
+        fleet.add(convert(new GridSquare(9, 1), new GridSquare(8, 1)));
+        fleet.add(convert(new GridSquare(0, 7), new GridSquare(1, 7), new GridSquare(2, 7)));
+        fleet.add(convert(new GridSquare(6, 2), new GridSquare(6, 3), new GridSquare(6, 4)));
+        fleet.add(convert(new GridSquare(4, 1), new GridSquare(4, 2), new GridSquare(4, 3), new GridSquare(4, 4)));
 
         Assert.assertFalse(GameGridValidator.isShipLocationsValid(fleet));
     }

@@ -3,13 +3,15 @@ package com.github.elkurilina.seabattle;
 import java.util.Collection;
 
 /**
+ * Player interface describes required functionality of SeaBattle player.
+ *
  * @author Elena Kurilina
  */
 public interface Player {
 
-    Cell makeShot(GameGrid grid);
+    GridSquare makeShot(GameGrid grid);
 
-    public Collection<Collection<Cell>> getShips(Iterable<Integer> shipSizes);
+    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes);
 
     String getName();
 

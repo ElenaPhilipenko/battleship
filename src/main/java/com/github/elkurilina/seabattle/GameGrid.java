@@ -4,70 +4,73 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * GameGrid represents grid of squares with values, where Player can get information
+ * about his made shots.
+ *
  * @author Elena Kurilina
  */
 public class GameGrid {
 
-    protected final List<List<CellState>> values;
-    protected final Collection<Cell> cells = new HashSet<>();
+    protected final List<List<SquareState>> values;
+    protected final Collection<GridSquare> squares = new HashSet<>();
 
-    public GameGrid(List<List<CellState>> values, Collection<Cell> cells) {
-        this.cells.addAll(cells);
+    public GameGrid(List<List<SquareState>> values, Collection<GridSquare> squares) {
+        this.squares.addAll(squares);
         this.values = values;
     }
 
-    protected GameGrid(Collection<Collection<Cell>> shipLocations, int gridSize) {
+    protected GameGrid(Collection<Collection<GridSquare>> shipLocations, int gridSize) {
         this.values = createEmptyGrid(gridSize);
         shipLocations.stream()
-                .forEach(cells -> cells
-                        .forEach(cell -> setCell(cell, CellState.SHIP)));
+                .forEach(squares -> squares
+                        .forEach(s -> setSquare(s, SquareState.SHIP)));
     }
 
     public int getSize() {
         return values.size();
     }
 
-    public CellState getCellState(Cell cell) {
-        final CellState state = getCellOpenState(cell);
-        if (state == CellState.SHIP || state == CellState.EMPTY) {
-            return CellState.HIDDEN;
+    public SquareState getSquareState(GridSquare gridSquare) {
+        final SquareState state = getSquareOpenState(gridSquare);
+        if (state == SquareState.SHIP || state == SquareState.EMPTY) {
+            return SquareState.HIDDEN;
         }
         return state;
     }
 
-    public Collection<Cell> findNotShotPoints() {
-        return filterGridCells(Arrays.asList(CellState.EMPTY, CellState.SHIP));
+    public Collection<GridSquare> findNotShotSquares() {
+        return filterGridSquares(Arrays.asList(SquareState.EMPTY, SquareState.SHIP));
     }
 
-    public Collection<Cell> findDeadShips() {
-        return filterGridCells(Arrays.asList(CellState.DEAD_SHIP));
+    public Collection<GridSquare> findDeadShips() {
+        return filterGridSquares(Arrays.asList(SquareState.DEAD_SHIP));
     }
 
-    public Collection<Cell> findHitShip() {
-        return filterGridCells(Arrays.asList(CellState.HIT_SHIP));
+    public Collection<GridSquare> findHitShip() {
+        return filterGridSquares(Arrays.asList(SquareState.HIT));
     }
 
-    protected CellState getCellOpenState(Cell cell) {
-        return values.get(cell.x).get(cell.y);
+    protected SquareState getSquareOpenState(GridSquare gridSquare) {
+        return values.get(gridSquare.x).get(gridSquare.y);
     }
 
-    protected void setCell(Cell p, CellState value) {
+    protected void setSquare(GridSquare p, SquareState value) {
         values.get(p.x).set(p.y, value);
     }
 
-    private Collection<Cell> filterGridCells(Collection<CellState> values) {
-        return cells.stream()
-                .filter(cell -> values.contains(getCellOpenState(cell)))
+    private Collection<GridSquare> filterGridSquares(Collection<SquareState> values) {
+        return squares.stream()
+                .filter(s -> values.contains(getSquareOpenState(s)))
                 .collect(Collectors.toSet());
     }
 
-    private List<List<CellState>> createEmptyGrid(int size) {
-        final List<List<CellState>> result = new ArrayList<>(size);
+    private List<List<SquareState>> createEmptyGrid(int size) {
+        final List<List<SquareState>> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             result.add(new ArrayList<>(size));
             for (int j = 0; j < size; j++) {
-                result.get(i).add(CellState.EMPTY);
-                cells.add(new Cell(i, j));
+                result.get(i).add(SquareState.EMPTY);
+                squares.add(new GridSquare(i, j));
             }
         }
         return result;

@@ -5,13 +5,18 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
+ * WriteGameGrid extends GameGrid by abilities to modify state of the grid
+ * and get information about ships.
+ * Each object contains reference to masked version of itself (GameGrid object),
+ * which can be given to an opponent.
+ *
  * @author Elena Kurilina
  */
 public class WriteGameGrid extends GameGrid {
 
     public final GameGrid maskedGrid;
 
-    public static WriteGameGrid createGameGidWithShips(Collection<Collection<Cell>> shipLocation, int gridSize) {
+    public static WriteGameGrid createGameGidWithShips(Collection<Collection<GridSquare>> shipLocation, int gridSize) {
         if (GameGridValidator.isShipLocationsValid(shipLocation)) {
             return new WriteGameGrid(shipLocation, gridSize);
         } else {
@@ -19,67 +24,67 @@ public class WriteGameGrid extends GameGrid {
         }
     }
 
-    public WriteGameGrid(Collection<Collection<Cell>> shipLocation, int gridSize) {
+    private WriteGameGrid(Collection<Collection<GridSquare>> shipLocation, int gridSize) {
         super(shipLocation, gridSize);
-        maskedGrid = new GameGrid(values, cells);
+        maskedGrid = new GameGrid(values, squares);
     }
 
-    public CellState getCellState(Cell cell) {
-        return super.getCellOpenState(cell);
+    public SquareState getSquareState(GridSquare gridSquare) {
+        return super.getSquareOpenState(gridSquare);
     }
 
-    public boolean applyShot(Cell cell) {
-        final CellState state = getCellOpenState(cell);
-        if (state == CellState.SHIP) {
-            setCell(cell, CellState.HIT_SHIP);
-            final Collection<Cell> ship = findShipByCell(cell);
+    public boolean applyShot(GridSquare gridSquare) {
+        final SquareState state = getSquareOpenState(gridSquare);
+        if (state == SquareState.SHIP) {
+            setSquare(gridSquare, SquareState.HIT);
+            final Collection<GridSquare> ship = findShipBySquare(gridSquare);
             if (isShipDead(ship)) {
                 markShipAsDead(ship);
             }
             return true;
-        } else if (state == CellState.EMPTY) {
-            setCell(cell, CellState.MISSED_SHOT);
+        } else if (state == SquareState.EMPTY) {
+            setSquare(gridSquare, SquareState.MISS);
         }
         return false;
     }
 
     public boolean hasAfloatShip() {
-        for (List<CellState> row : values) {
-            if (row.contains(CellState.SHIP)) {
+        for (List<SquareState> row : values) {
+            if (row.contains(SquareState.SHIP)) {
                 return true;
             }
         }
         return false;
     }
 
-    private void markShipAsDead(Collection<Cell> ship) {
-        ship.stream().forEach(cell -> setCell(cell, CellState.DEAD_SHIP));
+    private void markShipAsDead(Collection<GridSquare> ship) {
+        ship.stream().forEach(s -> setSquare(s, SquareState.DEAD_SHIP));
     }
 
-    private boolean isShipDead(Collection<Cell> ship) {
-        return ship.stream().filter(c -> getCellOpenState(c) == CellState.SHIP).count() == 0;
+    private boolean isShipDead(Collection<GridSquare> ship) {
+        return ship.stream().filter(c -> getSquareOpenState(c) == SquareState.SHIP).count() == 0;
     }
 
-    private Collection<Cell> findShipByCell(Cell ship) {
-        final Collection<Cell> shipCells = new HashSet<>();
+    private Collection<GridSquare> findShipBySquare(GridSquare ship) {
+        final Collection<GridSquare> shipGridSquares = new HashSet<>();
         boolean shipPresentLeft = true;
         boolean shipPresentRight = true;
         boolean shipPresentUp = true;
         boolean shipPresentDown = true;
         int i = 0;
         while (shipPresentLeft || shipPresentRight || shipPresentDown || shipPresentUp) {
-            if (shipPresentLeft) shipPresentLeft = putIfShipCell(ship.translate(-i, 0), shipCells);
-            if (shipPresentRight) shipPresentRight = putIfShipCell(ship.translate(i, 0), shipCells);
-            if (shipPresentDown) shipPresentDown = putIfShipCell(ship.translate(0, -i), shipCells);
-            if (shipPresentUp) shipPresentUp = putIfShipCell(ship.translate(0, i), shipCells);
+            if (shipPresentLeft) shipPresentLeft = putIfShip(ship.translate(-i, 0), shipGridSquares);
+            if (shipPresentRight) shipPresentRight = putIfShip(ship.translate(i, 0), shipGridSquares);
+            if (shipPresentDown) shipPresentDown = putIfShip(ship.translate(0, -i), shipGridSquares);
+            if (shipPresentUp) shipPresentUp = putIfShip(ship.translate(0, i), shipGridSquares);
             i++;
         }
-        return shipCells;
+        return shipGridSquares;
     }
 
-    private boolean putIfShipCell(Cell cell, Collection<Cell> shipCells) {
-        if (cell.isInside(getSize()) && getCellOpenState(cell).isShip()) {
-            shipCells.add(cell);
+    private boolean putIfShip(GridSquare gridSquare, Collection<GridSquare> shipGridSquares) {
+        if (gridSquare.isInside(getSize()) && getSquareOpenState(gridSquare).isShip()) {
+            shipGridSquares.add(gridSquare);
             return true;
         }
         return false;
