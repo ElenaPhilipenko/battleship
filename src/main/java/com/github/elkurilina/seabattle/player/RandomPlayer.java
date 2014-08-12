@@ -4,6 +4,7 @@ import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.GameGrid;
 import com.github.elkurilina.seabattle.Player;
 
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import static com.github.elkurilina.seabattle.GridSquare.SquareComparator;
  */
 public class RandomPlayer implements Player {
     public static final String BOT_PLAYER = "Bot Player";
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     private final int size;
 

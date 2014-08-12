@@ -2,13 +2,14 @@ package com.github.elkurilina.seabattle.player;
 
 import com.github.elkurilina.seabattle.GridSquare;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
  * @author Elena Kurilina
  */
 public class RandomShipLocator {
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     public Collection<Collection<GridSquare>> createShips(Iterable<Integer> shipSizes, int gridSize) {
         final Collection<Collection<GridSquare>> shipLocations = new HashSet<>();
