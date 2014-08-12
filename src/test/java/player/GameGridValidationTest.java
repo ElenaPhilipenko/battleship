@@ -1,7 +1,7 @@
 package player;
 
 import com.github.elkurilina.seabattle.GridSquare;
-import com.github.elkurilina.seabattle.GameGridValidator;
+import com.github.elkurilina.seabattle.ShipsValidator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -15,14 +15,14 @@ public class GameGridValidationTest extends AbstractTest {
 
     @Test
     public void testFleetValid() {
-        Assert.assertTrue(GameGridValidator.isShipLocationsValid(fleet));
+        Assert.assertTrue(ShipsValidator.isShipLocationsValid(fleet));
     }
 
     @Test
     public void testDetectWrongAmountOfShips() {
         final Collection<Collection<GridSquare>> invalid = new ArrayList<>();
         invalid.add(convert(new GridSquare(0, 0), new GridSquare(0, 1)));
-        Assert.assertFalse(GameGridValidator.isShipLocationsValid(invalid));
+        Assert.assertFalse(ShipsValidator.isShipLocationsValid(invalid));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class GameGridValidationTest extends AbstractTest {
         invalid.add(convert(new GridSquare(2, 4)));
         invalid.add(convert(new GridSquare(2, 2)));
         invalid.add(convert(new GridSquare(2, 0)));
-        Assert.assertFalse(GameGridValidator.isShipLocationsValid(invalid));
+        Assert.assertFalse(ShipsValidator.isShipLocationsValid(invalid));
     }
 
     //          0 1 2 3 4 5 6 7 8 9
@@ -68,6 +68,38 @@ public class GameGridValidationTest extends AbstractTest {
         fleet.add(convert(new GridSquare(6, 2), new GridSquare(6, 3), new GridSquare(6, 4)));
         fleet.add(convert(new GridSquare(4, 1), new GridSquare(4, 2), new GridSquare(4, 3), new GridSquare(4, 4)));
 
-        Assert.assertFalse(GameGridValidator.isShipLocationsValid(fleet));
+        Assert.assertFalse(ShipsValidator.isShipLocationsValid(fleet));
+    }
+
+    @Test
+    public void testShipWithGap(){
+        final Collection<GridSquare> ship = convert(new GridSquare(0,3), new GridSquare(0,1), new GridSquare(0,4));
+
+        Assert.assertFalse(ShipsValidator.isShipValid(ship));
+
+    }
+
+    @Test
+    public void testShipWithBreak(){
+        final Collection<GridSquare> ship = convert(new GridSquare(0,3), new GridSquare(1,3), new GridSquare(0,4));
+
+        Assert.assertFalse(ShipsValidator.isShipValid(ship));
+
+    }
+
+    @Test
+    public void testShipWithDiagonalGap(){
+        final Collection<GridSquare> ship = convert(new GridSquare(0,3), new GridSquare(1,4), new GridSquare(0,4));
+
+        Assert.assertFalse(ShipsValidator.isShipValid(ship));
+
+    }
+
+    @Test
+    public void testValidShip(){
+        final Collection<GridSquare> ship = convert(new GridSquare(0,3), new GridSquare(0,2), new GridSquare(0,4));
+
+        Assert.assertTrue(ShipsValidator.isShipValid(ship));
+
     }
 }

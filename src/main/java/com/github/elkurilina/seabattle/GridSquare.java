@@ -1,6 +1,7 @@
 package com.github.elkurilina.seabattle;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 
 /**
@@ -88,4 +89,15 @@ public class GridSquare {
                 '}';
     }
 
+    public static class SquareComparator implements Comparator<GridSquare> {
+
+        @Override
+        public int compare(GridSquare o1, GridSquare o2) {
+            if (o1.x == o2.x && o1.y == o2.y) {
+                return 0;
+            } else {
+                return o1.x > o2.x || o1.y > o2.y ? 1 : -1;
+            }
+        }
+    }
 }

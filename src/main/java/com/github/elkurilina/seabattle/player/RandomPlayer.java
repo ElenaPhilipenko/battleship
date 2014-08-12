@@ -7,6 +7,8 @@ import com.github.elkurilina.seabattle.Player;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.github.elkurilina.seabattle.GridSquare.SquareComparator;
+
 /**
  * @author Elena Kurilina
  */
@@ -62,18 +64,6 @@ public class RandomPlayer implements Player {
             return candidates;
         } else {
             return hitShip.iterator().next().findNeighborsOnGrid(size);
-        }
-    }
-
-    private static class SquareComparator implements Comparator<GridSquare> {
-
-        @Override
-        public int compare(GridSquare o1, GridSquare o2) {
-            if (o1.x == o2.x && o1.y == o2.y) {
-                return 0;
-            } else {
-                return o1.x > o2.x || o1.y > o2.y ? 1 : -1;
-            }
         }
     }
 

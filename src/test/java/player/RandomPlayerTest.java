@@ -61,7 +61,7 @@ public class RandomPlayerTest extends AbstractTest {
     public void testCreatesShipsAreValid() {
         final Collection<Collection<GridSquare>> fleet = player.getShips(Game.SHIP_SIZES);
 
-        Assert.assertTrue(GameGridValidator.isShipLocationsValid(fleet));
+        Assert.assertTrue(ShipsValidator.isShipLocationsValid(fleet));
     }
 
     @Test

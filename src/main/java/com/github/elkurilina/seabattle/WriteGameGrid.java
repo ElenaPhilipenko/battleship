@@ -17,7 +17,7 @@ public class WriteGameGrid extends GameGrid {
     public final GameGrid maskedGrid;
 
     public static WriteGameGrid createGameGidWithShips(Collection<Collection<GridSquare>> shipLocation, int gridSize) {
-        if (GameGridValidator.isShipLocationsValid(shipLocation)) {
+        if (ShipsValidator.isShipLocationsValid(shipLocation)) {
             return new WriteGameGrid(shipLocation, gridSize);
         } else {
             throw new IllegalArgumentException("Ship location is not valid");

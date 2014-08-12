@@ -24,7 +24,7 @@ public class SeaBattle {
         final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), GRID_SIZE);
         final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), GRID_SIZE);
 
-        p2.setGreeds(p2GameGrid);
+        p2.setGrid(p2GameGrid);
 
         final String winner = game.playGame(p1, p2, p1GameGrid, p2GameGrid);
         System.out.println("Winner is: " + winner);

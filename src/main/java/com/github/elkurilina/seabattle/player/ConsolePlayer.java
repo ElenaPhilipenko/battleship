@@ -35,12 +35,19 @@ public class ConsolePlayer implements Player {
 
     @Override
     public GridSquare makeShot(GameGrid grid) {
-        printGrid(grid);
-        System.out.println("You game values: ");
-        printGrid(myGreed);
-        System.out.println("Please enter coordinates of you shot in format: x y");
+        return printAndMakeShot(grid, true);
+    }
+
+    private GridSquare printAndMakeShot(GameGrid grid, boolean print) {
+        if (print) printCurrentStates(grid);
         try {
-            return parseSquare(size);
+            final GridSquare shot = parseSquare(size);
+            if (grid.findNotShotSquares().contains(shot)) {
+                return shot;
+            } else {
+                System.out.println("Shot is not valid.");
+                return printAndMakeShot(grid, false);
+            }
         } catch (Exception e) {
             System.out.print("Can not parse move.");
             return makeShot(grid);
@@ -53,7 +60,7 @@ public class ConsolePlayer implements Player {
         System.out.println("Do you want create random game values? (y/n)");
         try {
             if (br.readLine().contains("n")) {
-                ship = createSips(shipSizes, size);
+                ship = createShips(shipSizes);
             } else {
                 ship = new RandomShipLocator().createShips(shipSizes, size);
             }
@@ -69,42 +76,67 @@ public class ConsolePlayer implements Player {
         return this.name;
     }
 
-    public void setGreeds(WriteGameGrid myGreed) {
+    public void setGrid(WriteGameGrid myGreed) {
         this.myGreed = myGreed;
     }
 
-    private Collection<Collection<GridSquare>> createSips(Iterable<Integer> shipSizes, int size) {
-        final Collection<Collection<GridSquare>> ship = new HashSet<>();
-        for (Integer shipSize : shipSizes) {
-            final Set<GridSquare> shipLocation = new HashSet<>();
-            System.out.println("Please, input location points for ship with size: " + shipSize);
-            for (int i = 0; i < shipSize; i++) {
-                addParsedSquare(shipLocation, i, size);
-            }
-            ship.add(shipLocation);
-
-        }
-        return ship;
+    private void printCurrentStates(GameGrid grid) {
+        printGrid(grid);
+        System.out.println("You game grid: ");
+        printGrid(myGreed);
+        System.out.println("Please enter coordinates of you shot in format: x y");
     }
 
+    private Collection<Collection<GridSquare>> createShips(Iterable<Integer> shipSizes) {
+        final Collection<Collection<GridSquare>> ships = new HashSet<>();
+        for (Integer shipSize : shipSizes) {
+            createShip(ships, shipSize);
+        }
+        return ships;
+    }
+
+    private void createShip(Collection<Collection<GridSquare>> ships, Integer shipSize) {
+        final Set<GridSquare> ship = new HashSet<>();
+        System.out.println("Please, input location points for ship with size: " + shipSize);
+        for (int i = 0; i < shipSize; i++) {
+            System.out.println("point " + (i + 1));
+            addParsedShipPart(ship, ships);
+        }
+        ships.add(ship);
+        validateShip(ships, shipSize, ship);
+    }
+
+    private void validateShip(Collection<Collection<GridSquare>> ships, Integer shipSize, Set<GridSquare> ship) {
+        if (!ShipsValidator.isDistanceBetweenShipsValid(ships) || !ShipsValidator.isShipValid(ship)) {
+            System.out.println("Location of the last ship is wrong. Please recreate it.");
+            ships.remove(ship);
+            createShip(ships, shipSize);
+        }
+    }
 
     private GridSquare parseSquare(int max) throws Exception {
-        System.out.println("Please enter in format: x y ");
+        System.out.println("Please enter your shot in format: x y ");
         final String shot = br.readLine().replace(" ", "");
         final Integer x = Integer.parseInt(String.valueOf(shot.charAt(0)));
         final Integer y = Integer.parseInt(String.valueOf(shot.charAt(1)));
-        if (x < 0 || x > max || y < 0 || y > max) {
-            throw new IllegalArgumentException("Wring point");
+        final GridSquare square = new GridSquare(x, y);
+        if (!square.isInside(max)) {
+            throw new IllegalArgumentException("Wrong square.");
         }
-        return new GridSquare(x, y);
+        return square;
     }
 
-    private void addParsedSquare(Collection<GridSquare> shipLocation, int i, int size) {
-        System.out.println("point " + (i + 1));
+    private void addParsedShipPart(Collection<GridSquare> ship, Collection<Collection<GridSquare>> ships) {
         try {
-            shipLocation.add(parseSquare(size));
+            final GridSquare parsed = parseSquare(size);
+            if (!ship.contains(parsed) && ships.stream().filter(s -> s.contains(parsed)).count() == 0) {
+                ship.add(parsed);
+            } else {
+                System.out.println("This square is already used.");
+                addParsedShipPart(ship, ships);
+            }
         } catch (Exception e) {
-            addParsedSquare(shipLocation, i, size);
+            addParsedShipPart(ship, ships);
         }
     }
 
