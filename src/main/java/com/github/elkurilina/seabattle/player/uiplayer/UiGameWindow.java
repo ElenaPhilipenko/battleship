@@ -42,20 +42,15 @@ public class UiGameWindow extends Application {
         stage.setOnCloseRequest(e -> System.exit(0));
     }
 
-
     public static void gameMode() {
         new JFXPanel();
         Platform.runLater(() -> {
             HBox root = new HBox();
-
             createGameGrids(root);
-
             root.setSpacing(10);
             stage.setScene(new Scene(root));
-
             stage.setWidth(590);
             stage.setHeight(300);
-
             stage.setTitle("BattleShip");
             stage.show();
         });
@@ -78,16 +73,12 @@ public class UiGameWindow extends Application {
                 }
             });
             root.getChildren().add(randomButton);
-
             root.setSpacing(5);
-
             root.getChildren().add(currentTip);
             root.getChildren().add(gridPane);
             stage.setScene(new Scene(root));
-
             stage.setWidth(300);
             stage.setHeight(350);
-
             stage.setTitle("Creating your ships");
             stage.show();
         });
@@ -117,7 +108,6 @@ public class UiGameWindow extends Application {
             gridPane.add(b, s.y, s.x);
         });
         root.getChildren().add(gridPane);
-
         final GridPane opponentGridPane = new GridPane();
         myGrid.squares.forEach(s -> {
             final Button b = new Button(SquareState.HIDDEN.toString());

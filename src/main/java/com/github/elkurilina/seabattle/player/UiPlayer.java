@@ -15,9 +15,6 @@ import java.util.Collection;
 public class UiPlayer implements Player {
     public final static Monitor monitor = new Monitor();
 
-    public UiPlayer() {
-    }
-
     @Override
     public GridSquare makeShot(GameGrid grid) {
         UiGameWindow.opponentGrid = grid;
@@ -64,7 +61,6 @@ public class UiPlayer implements Player {
 
     public void handleResult(boolean victory){
         UiGameWindow.showResult(victory);
-
     }
 
     public static class Monitor {

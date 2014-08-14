@@ -25,8 +25,7 @@
     -----------
     To build project you can use Maven. 
     Game is written on JDK 1.8.0_11 so you need to compile it with Java 1.8.
-    Download project, navigate to root folder of the project, where pom.xml is located
-    and. 
+    Download project, navigate to root folder of the project, where pom.xml is located. 
     To build Ui version of the game run command:
         mvn clean install -P ui
     To build Ui version of the game run command:
