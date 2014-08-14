@@ -14,10 +14,10 @@ public class Game {
     public static final Collection<Integer> SHIP_SIZES = Collections.unmodifiableList(
             Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1));
 
-    public String playGame(Player p1, Player p2, WriteGameGrid grid1, WriteGameGrid grid2) {
+    public Player playGame(Player p1, Player p2, WriteGameGrid grid1, WriteGameGrid grid2) {
         while (true) {
-            if (playRound(p1, grid2)) return p1.getName();
-            if (playRound(p2, grid1)) return p2.getName();
+            if (playRound(p1, grid2)) return p1;
+            if (playRound(p2, grid1)) return p2;
         }
     }
 

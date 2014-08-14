@@ -30,7 +30,7 @@ public class GridSquare {
         return x >= 0 && x < gridSize && y >= 0 && y < gridSize;
     }
 
-    public double distance(GridSquare c){
+    public double distance(GridSquare c) {
         return Math.sqrt(Math.pow((x - c.x), 2) + Math.pow((y - c.y), 2));
     }
 

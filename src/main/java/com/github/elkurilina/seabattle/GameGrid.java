@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class GameGrid {
 
     protected final List<List<SquareState>> values;
-    protected final Collection<GridSquare> squares = new HashSet<>();
+    public final Collection<GridSquare> squares = new HashSet<>();
 
     public GameGrid(List<List<SquareState>> values, Collection<GridSquare> squares) {
         this.squares.addAll(squares);

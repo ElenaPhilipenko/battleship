@@ -49,7 +49,7 @@ public class ConsolePlayer implements Player {
                 return printAndMakeShot(grid, false);
             }
         } catch (Exception e) {
-            System.out.print("Can not parse move.");
+            System.out.println("Can not parse move.");
             return makeShot(grid);
         }
     }
@@ -84,7 +84,6 @@ public class ConsolePlayer implements Player {
         printGrid(grid);
         System.out.println("You game grid: ");
         printGrid(myGreed);
-        System.out.println("Please enter coordinates of you shot in format: x y");
     }
 
     private Collection<Collection<GridSquare>> createShips(Iterable<Integer> shipSizes) {

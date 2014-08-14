@@ -36,7 +36,8 @@ public class ShipsValidator {
         return isShipOnTheSameLine(ship) && !shipContainGaps(ship);
     }
 
-    private static boolean isShipOnTheSameLine(Collection<GridSquare> ship){
+    private static boolean isShipOnTheSameLine(Collection<GridSquare> ship) {
+        if (ship.size() == 1) return true;
         final GridSquare first = ship.iterator().next();
         long vertical = ship.stream().filter(s -> s.y == first.y).count();
         long horizontal = ship.stream().filter(s -> s.x == first.x).count();

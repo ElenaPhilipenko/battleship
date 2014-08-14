@@ -68,7 +68,7 @@ public class GameGridValidationTest extends AbstractTest {
         fleet.add(convert(new GridSquare(6, 2), new GridSquare(6, 3), new GridSquare(6, 4)));
         fleet.add(convert(new GridSquare(4, 1), new GridSquare(4, 2), new GridSquare(4, 3), new GridSquare(4, 4)));
 
-        Assert.assertFalse(ShipsValidator.isShipLocationsValid(fleet));
+        Assert.assertFalse(ShipsValidator.isDistanceBetweenShipsValid(fleet));
     }
 
     @Test
@@ -98,6 +98,14 @@ public class GameGridValidationTest extends AbstractTest {
     @Test
     public void testValidShip(){
         final Collection<GridSquare> ship = convert(new GridSquare(0,3), new GridSquare(0,2), new GridSquare(0,4));
+
+        Assert.assertTrue(ShipsValidator.isShipValid(ship));
+
+    }
+
+    @Test
+    public void testValidOneSquareShip(){
+        final Collection<GridSquare> ship = convert(new GridSquare(0,3));
 
         Assert.assertTrue(ShipsValidator.isShipValid(ship));
 
