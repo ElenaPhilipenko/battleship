@@ -11,7 +11,7 @@ public interface Player {
 
     GridSquare makeShot(GameGrid grid);
 
-    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes);
+    public Collection<Collection<GridSquare>> getShips();
 
     String getName();
 

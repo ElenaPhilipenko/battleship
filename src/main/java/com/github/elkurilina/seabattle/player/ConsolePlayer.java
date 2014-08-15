@@ -24,11 +24,9 @@ public class ConsolePlayer implements Player {
 
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private final String name;
-    private final int size;
     private WriteGameGrid myGreed;
 
-    public ConsolePlayer(int fieldSize) throws IOException {
-        this.size = fieldSize;
+    public ConsolePlayer() throws IOException {
         System.out.println("Please, enter your name: ");
         this.name = br.readLine();
     }
@@ -41,7 +39,7 @@ public class ConsolePlayer implements Player {
     private GridSquare printAndMakeShot(GameGrid grid, boolean print) {
         if (print) printCurrentStates(grid);
         try {
-            final GridSquare shot = parseSquare(size);
+            final GridSquare shot = parseSquare(Game.GRID_SIZE);
             if (grid.findNotShotSquares().contains(shot)) {
                 return shot;
             } else {
@@ -55,18 +53,18 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes) {
+    public Collection<Collection<GridSquare>> getShips() {
         final Collection<Collection<GridSquare>> ship;
         System.out.println("Do you want create random game values? (y/n)");
         try {
             if (br.readLine().contains("n")) {
-                ship = createShips(shipSizes);
+                ship = createShips();
             } else {
-                ship = new RandomShipLocator().createShips(shipSizes, size);
+                ship = new RandomShipLocator().createShips(Game.SHIP_SIZES, Game.GRID_SIZE);
             }
         } catch (IOException e) {
             System.out.println("Try again.");
-            return getShips(shipSizes);
+            return getShips();
         }
         return ship;
     }
@@ -86,9 +84,9 @@ public class ConsolePlayer implements Player {
         printGrid(myGreed);
     }
 
-    private Collection<Collection<GridSquare>> createShips(Iterable<Integer> shipSizes) {
+    private Collection<Collection<GridSquare>> createShips() {
         final Collection<Collection<GridSquare>> ships = new HashSet<>();
-        for (Integer shipSize : shipSizes) {
+        for (Integer shipSize : Game.SHIP_SIZES) {
             createShip(ships, shipSize);
         }
         return ships;
@@ -127,7 +125,7 @@ public class ConsolePlayer implements Player {
 
     private void addParsedShipPart(Collection<GridSquare> ship, Collection<Collection<GridSquare>> ships) {
         try {
-            final GridSquare parsed = parseSquare(size);
+            final GridSquare parsed = parseSquare(Game.GRID_SIZE);
             if (!ship.contains(parsed) && ships.stream().filter(s -> s.contains(parsed)).count() == 0) {
                 ship.add(parsed);
             } else {
@@ -141,9 +139,9 @@ public class ConsolePlayer implements Player {
 
     public void printGrid(GameGrid grid) {
         System.out.println("  0 1 2 3 4 5 6 7 8 9");
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < Game.GRID_SIZE; i++) {
             System.out.print(i + " ");
-            for (int j = 0; j < size; j++) {
+            for (int j = 0; j < Game.GRID_SIZE; j++) {
                 System.out.print(printValues.get(grid.getSquareState(new GridSquare(i, j))));
                 System.out.print(" ");
             }

@@ -18,11 +18,11 @@ public class SeaBattle {
 
     public static void main(String[] args) throws IOException {
         final Game game = new Game();
-        final Player p1 = new RandomPlayer(GRID_SIZE);
-        final ConsolePlayer p2 = new ConsolePlayer(GRID_SIZE);
+        final Player p1 = new RandomPlayer();
+        final ConsolePlayer p2 = new ConsolePlayer();
 
-        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), GRID_SIZE);
-        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), GRID_SIZE);
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
 
         p2.setGrid(p2GameGrid);
 

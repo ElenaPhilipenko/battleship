@@ -34,7 +34,7 @@ public class UiPlayer implements Player {
     }
 
     @Override
-    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes) {
+    public Collection<Collection<GridSquare>> getShips() {
         new Thread(() -> Application.launch(UiGameWindow.class)).start();
         UiGameWindow.createShipsMode();
         synchronized (UiGameWindow.ships){

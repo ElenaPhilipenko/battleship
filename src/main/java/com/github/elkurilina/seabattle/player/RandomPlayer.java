@@ -1,5 +1,6 @@
 package com.github.elkurilina.seabattle.player;
 
+import com.github.elkurilina.seabattle.Game;
 import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.GameGrid;
 import com.github.elkurilina.seabattle.Player;
@@ -17,12 +18,6 @@ public class RandomPlayer implements Player {
     public static final String BOT_PLAYER = "Bot Player";
     private final SecureRandom random = new SecureRandom();
 
-    private final int size;
-
-    public RandomPlayer(int fieldSize) {
-        this.size = fieldSize;
-    }
-
     @Override
     public GridSquare makeShot(GameGrid grid) {
         final Collection<GridSquare> hitShip = grid.findHitShip();
@@ -38,8 +33,8 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public Collection<Collection<GridSquare>> getShips(Iterable<Integer> shipSizes) {
-        return new RandomShipLocator().createShips(shipSizes, size);
+    public Collection<Collection<GridSquare>> getShips() {
+        return new RandomShipLocator().createShips(Game.SHIP_SIZES, Game.GRID_SIZE);
     }
 
     @Override
@@ -49,7 +44,7 @@ public class RandomPlayer implements Player {
 
     private Collection<GridSquare> findSquaresAround(Collection<GridSquare> deadShips) {
         final Collection<GridSquare> allGridSquares = new HashSet<>();
-        deadShips.stream().forEach(s -> allGridSquares.addAll(s.findNeighborsOnGridWithDiagonals(size)));
+        deadShips.stream().forEach(s -> allGridSquares.addAll(s.findNeighborsOnGridWithDiagonals(Game.GRID_SIZE)));
         allGridSquares.addAll(deadShips);
         return allGridSquares;
     }
@@ -64,7 +59,7 @@ public class RandomPlayer implements Player {
             candidates.add(min.translate(-1, horizontal));
             return candidates;
         } else {
-            return hitShip.iterator().next().findNeighborsOnGrid(size);
+            return hitShip.iterator().next().findNeighborsOnGrid(Game.GRID_SIZE);
         }
     }
 
