@@ -2,6 +2,7 @@ package com.github.elkurilina.seabattle.player.uiplayer;
 
 import com.github.elkurilina.seabattle.*;
 import com.github.elkurilina.seabattle.player.RandomShipLocator;
+import com.github.elkurilina.seabattle.player.UiPlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -16,7 +17,6 @@ import javafx.stage.Stage;
 
 import java.util.*;
 
-import static com.github.elkurilina.seabattle.player.UiPlayer.monitor;
 import static javafx.stage.Modality.WINDOW_MODAL;
 
 /**
@@ -113,10 +113,11 @@ public class UiGameWindow extends Application {
             final Button b = new Button(SquareState.HIDDEN.toString());
             myShots.put(s, b);
             b.setOnAction(e -> {
-                if (b.getText().equals(SquareState.HIDDEN.toString()) && monitor.nextShot == null) {
-                    synchronized (monitor) {
-                        monitor.nextShot = new GridSquare(s.x, s.y);
-                        monitor.notifyAll();
+                if (b.getText().equals(SquareState.HIDDEN.toString())) {
+                    try {
+                        UiPlayer.nextShot.put(new GridSquare(s.x, s.y));
+                    } catch (InterruptedException e1) {
+                        throw new RuntimeException(e1);
                     }
                 }
             });

@@ -8,12 +8,14 @@ import com.github.elkurilina.seabattle.player.uiplayer.UiGameWindow;
 import javafx.application.Application;
 
 import java.util.Collection;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * @author Elena Kurilina
  */
 public class UiPlayer implements Player {
-    public final static Monitor monitor = new Monitor();
+    public final static BlockingQueue<GridSquare> nextShot = new SynchronousQueue<>();
     private GameGrid opponentGrid;
 
     @Override
@@ -43,27 +45,19 @@ public class UiPlayer implements Player {
     public GridSquare makeShot() {
         UiGameWindow.opponentGrid = opponentGrid;
         UiGameWindow.updateGrids();
-        synchronized (monitor) {
-            while (monitor.nextShot == null) {
-                try {
-                    monitor.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            final GridSquare lastShot = monitor.nextShot;
-            monitor.nextShot = null;
+        final GridSquare lastShot;
+        try {
+            lastShot = nextShot.take();
             return lastShot;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     @Override
     public void handleResult(boolean victory) {
         UiGameWindow.showResult(victory);
-    }
-
-    public static class Monitor {
-        public GridSquare nextShot;
     }
 
 }
