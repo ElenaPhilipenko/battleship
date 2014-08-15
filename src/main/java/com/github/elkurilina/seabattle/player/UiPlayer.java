@@ -1,6 +1,5 @@
 package com.github.elkurilina.seabattle.player;
 
-import com.github.elkurilina.seabattle.Game;
 import com.github.elkurilina.seabattle.GameGrid;
 import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.Player;
@@ -16,21 +15,17 @@ import java.util.concurrent.SynchronousQueue;
  */
 public class UiPlayer implements Player {
     public final static BlockingQueue<GridSquare> nextShot = new SynchronousQueue<>();
+    public final static BlockingQueue<Collection<Collection<GridSquare>>> ships = new SynchronousQueue<>();
     private GameGrid opponentGrid;
 
     @Override
     public Collection<Collection<GridSquare>> getShips() {
         new Thread(() -> Application.launch(UiGameWindow.class)).start();
         UiGameWindow.createShipsMode();
-        synchronized (UiGameWindow.ships) {
-            while (UiGameWindow.ships.size() != Game.SHIP_SIZES.size()) {
-                try {
-                    UiGameWindow.ships.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return UiGameWindow.ships;
+        try {
+            return ships.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

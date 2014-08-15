@@ -31,7 +31,7 @@ public class UiGameWindow extends Application {
 
 
     public static final Map<GridSquare, Button> gridButtons = new HashMap<>();
-    public static final Collection<Collection<GridSquare>> ships = new ArrayList<>();
+    private static final Collection<Collection<GridSquare>> ships = new ArrayList<>();
     private static final Label currentTip = new Label("Locate your ships.");
 
     private static Stage stage;
@@ -66,11 +66,12 @@ public class UiGameWindow extends Application {
             final VBox root = new VBox();
             final Button randomButton = new Button("Generate random ships");
             randomButton.setOnAction(e -> {
-                synchronized (ships) {
-                    ships.clear();
-                    ships.addAll(new RandomShipLocator().createShips(Game.SHIP_SIZES, Game.GRID_SIZE));
-                    ships.notifyAll();
+                try {
+                    UiPlayer.ships.put(new RandomShipLocator().createShips(Game.SHIP_SIZES, Game.GRID_SIZE));
+                } catch (InterruptedException e1) {
+                    throw new RuntimeException(e1);
                 }
+
             });
             root.getChildren().add(randomButton);
             root.setSpacing(5);
@@ -178,29 +179,31 @@ public class UiGameWindow extends Application {
     }
 
     private static boolean validatedAndAddSquare(Collection<Integer> shipSizes, Collection<GridSquare> ship, GridSquare square) {
-        synchronized (ships) {
-            ship.add(square);
-            final int max = Collections.max(shipSizes);
-            if (!ShipsValidator.isShipValid(ship) || ship.size() > max) {
-                currentTip.setText("Ship is not valid.");
-            } else if (ship.size() == max) {
-                final Collection<GridSquare> candidate = new ArrayList<>(ship);
-                ships.add(candidate);
-                if (ShipsValidator.isDistanceBetweenShipsValid(ships)) {
-                    if (addValidShip(shipSizes, ship)) return true;
-                } else {
-                    currentTip.setText("Distance between ships is not valid.");
-                    ships.remove(candidate);
-                }
+        ship.add(square);
+        final int max = Collections.max(shipSizes);
+        if (!ShipsValidator.isShipValid(ship) || ship.size() > max) {
+            currentTip.setText("Ship is not valid.");
+        } else if (ship.size() == max) {
+            final Collection<GridSquare> candidate = new ArrayList<>(ship);
+            ships.add(candidate);
+            if (ShipsValidator.isDistanceBetweenShipsValid(ships)) {
+                if (addValidShip(shipSizes, ship)) return true;
+            } else {
+                currentTip.setText("Distance between ships is not valid.");
+                ships.remove(candidate);
             }
-            return false;
         }
+        return false;
     }
 
     private static boolean addValidShip(Collection<Integer> shipSizes, Collection<GridSquare> ship) {
         shipSizes.remove(ship.size());
         if (shipSizes.isEmpty()) {
-            ships.notifyAll();
+            try {
+                UiPlayer.ships.put(ships);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             return true;
         }
         currentTip.setText("Create ship with " + Collections.max(shipSizes) + " squares");
