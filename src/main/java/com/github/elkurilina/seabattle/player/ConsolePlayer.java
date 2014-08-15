@@ -13,6 +13,7 @@ import java.util.*;
 public class ConsolePlayer implements Player {
 
     private static final Map<SquareState, String> printValues = new HashMap<>();
+
     static {
         printValues.put(SquareState.MISS, ".");
         printValues.put(SquareState.EMPTY, "-");
@@ -23,17 +24,12 @@ public class ConsolePlayer implements Player {
     }
 
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private final String name;
-    private WriteGameGrid myGreed;
-
-    public ConsolePlayer() throws IOException {
-        System.out.println("Please, enter your name: ");
-        this.name = br.readLine();
-    }
+    private GameGrid opponentGrid;
+    private GameGrid ownGreed;
 
     @Override
-    public GridSquare makeShot(GameGrid grid) {
-        return printAndMakeShot(grid, true);
+    public GridSquare makeShot() {
+        return printAndMakeShot(opponentGrid, true);
     }
 
     private GridSquare printAndMakeShot(GameGrid grid, boolean print) {
@@ -48,8 +44,14 @@ public class ConsolePlayer implements Player {
             }
         } catch (Exception e) {
             System.out.println("Can not parse move.");
-            return makeShot(grid);
+            return makeShot();
         }
+    }
+
+    @Override
+    public void initGrids(GameGrid ownGrid, GameGrid opponentGrid) {
+        this.ownGreed = ownGrid;
+        this.opponentGrid = opponentGrid;
     }
 
     @Override
@@ -70,18 +72,18 @@ public class ConsolePlayer implements Player {
     }
 
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    public void setGrid(WriteGameGrid myGreed) {
-        this.myGreed = myGreed;
+    public void handleResult(boolean victory) {
+        if (victory) {
+            System.out.println("Congratulations! You won!");
+        } else {
+            System.out.println("Sorry, you lost.");
+        }
     }
 
     private void printCurrentStates(GameGrid grid) {
         printGrid(grid);
         System.out.println("You game grid: ");
-        printGrid(myGreed);
+        printGrid(ownGreed);
     }
 
     private Collection<Collection<GridSquare>> createShips() {

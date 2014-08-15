@@ -9,10 +9,12 @@ import java.util.Collection;
  */
 public interface Player {
 
-    GridSquare makeShot(GameGrid grid);
+    Collection<Collection<GridSquare>> getShips();
 
-    public Collection<Collection<GridSquare>> getShips();
+    void initGrids(GameGrid ownGrid, GameGrid opponentGrid);
 
-    String getName();
+    GridSquare makeShot();
+
+    void handleResult (boolean victory);
 
 }

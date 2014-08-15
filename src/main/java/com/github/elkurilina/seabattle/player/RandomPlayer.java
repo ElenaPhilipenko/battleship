@@ -1,12 +1,15 @@
 package com.github.elkurilina.seabattle.player;
 
 import com.github.elkurilina.seabattle.Game;
-import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.GameGrid;
+import com.github.elkurilina.seabattle.GridSquare;
 import com.github.elkurilina.seabattle.Player;
 
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.github.elkurilina.seabattle.GridSquare.SquareComparator;
@@ -15,22 +18,9 @@ import static com.github.elkurilina.seabattle.GridSquare.SquareComparator;
  * @author Elena Kurilina
  */
 public class RandomPlayer implements Player {
-    public static final String BOT_PLAYER = "Bot Player";
     private final SecureRandom random = new SecureRandom();
 
-    @Override
-    public GridSquare makeShot(GameGrid grid) {
-        final Collection<GridSquare> hitShip = grid.findHitShip();
-        final Collection<GridSquare> notShotGridSquares = grid.findNotShotSquares();
-        final List<GridSquare> candidates;
-        if (!hitShip.isEmpty()) {
-            candidates =  findBestCandidatesAround(hitShip).stream().filter(notShotGridSquares::contains).collect(Collectors.toList());
-        } else {
-            notShotGridSquares.removeAll(findSquaresAround(grid.findDeadShips()));
-            candidates = new ArrayList<>(notShotGridSquares);
-        }
-        return candidates.get(random.nextInt(candidates.size()));
-    }
+    private GameGrid opponentGrid;
 
     @Override
     public Collection<Collection<GridSquare>> getShips() {
@@ -38,8 +28,26 @@ public class RandomPlayer implements Player {
     }
 
     @Override
-    public String getName() {
-        return BOT_PLAYER;
+    public void initGrids(GameGrid ownGrid, GameGrid opponentGrid) {
+        this.opponentGrid = opponentGrid;
+    }
+
+    @Override
+    public GridSquare makeShot() {
+        final Collection<GridSquare> hitShip = opponentGrid.findHitShip();
+        final Collection<GridSquare> notShotGridSquares = opponentGrid.findNotShotSquares();
+        final List<GridSquare> candidates;
+        if (!hitShip.isEmpty()) {
+            candidates = findBestCandidatesAround(hitShip).stream().filter(notShotGridSquares::contains).collect(Collectors.toList());
+        } else {
+            notShotGridSquares.removeAll(findSquaresAround(opponentGrid.findDeadShips()));
+            candidates = new ArrayList<>(notShotGridSquares);
+        }
+        return candidates.get(random.nextInt(candidates.size()));
+    }
+
+    @Override
+    public void handleResult(boolean victory) {
     }
 
     private Collection<GridSquare> findSquaresAround(Collection<GridSquare> deadShips) {

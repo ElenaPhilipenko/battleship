@@ -14,10 +14,34 @@ import java.util.Collection;
  */
 public class UiPlayer implements Player {
     public final static Monitor monitor = new Monitor();
+    private GameGrid opponentGrid;
 
     @Override
-    public GridSquare makeShot(GameGrid grid) {
-        UiGameWindow.opponentGrid = grid;
+    public Collection<Collection<GridSquare>> getShips() {
+        new Thread(() -> Application.launch(UiGameWindow.class)).start();
+        UiGameWindow.createShipsMode();
+        synchronized (UiGameWindow.ships) {
+            while (UiGameWindow.ships.size() != Game.SHIP_SIZES.size()) {
+                try {
+                    UiGameWindow.ships.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return UiGameWindow.ships;
+        }
+    }
+
+    @Override
+    public void initGrids(GameGrid ownGrid, GameGrid opponentGrid) {
+        this.opponentGrid = opponentGrid;
+        UiGameWindow.myGrid = ownGrid;
+        UiGameWindow.gameMode();
+    }
+
+    @Override
+    public GridSquare makeShot() {
+        UiGameWindow.opponentGrid = opponentGrid;
         UiGameWindow.updateGrids();
         synchronized (monitor) {
             while (monitor.nextShot == null) {
@@ -34,32 +58,7 @@ public class UiPlayer implements Player {
     }
 
     @Override
-    public Collection<Collection<GridSquare>> getShips() {
-        new Thread(() -> Application.launch(UiGameWindow.class)).start();
-        UiGameWindow.createShipsMode();
-        synchronized (UiGameWindow.ships){
-            while (UiGameWindow.ships.size() != Game.SHIP_SIZES.size()){
-                try {
-                    UiGameWindow.ships.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return UiGameWindow.ships;
-        }
-    }
-
-    @Override
-    public String getName() {
-        return "UiPlayer";
-    }
-
-    public void setGrid(GameGrid grid) {
-        UiGameWindow.myGrid = grid;
-        UiGameWindow.gameMode();
-    }
-
-    public void handleResult(boolean victory){
+    public void handleResult(boolean victory) {
         UiGameWindow.showResult(victory);
     }
 

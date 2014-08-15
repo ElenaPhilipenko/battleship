@@ -1,8 +1,6 @@
 package com.github.elkurilina.seabattle;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Game contains rules of playing SeaBattle game.
@@ -14,21 +12,36 @@ public class Game {
     public static final Collection<Integer> SHIP_SIZES = Collections.unmodifiableList(
             Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1));
 
-    public Player playGame(Player p1, Player p2, WriteGameGrid grid1, WriteGameGrid grid2) {
-        while (true) {
-            if (playRound(p1, grid2)) return p1;
-            if (playRound(p2, grid1)) return p2;
+    public void playGame(Player p1, Player p2) {
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
+
+        p2.initGrids(p2GameGrid, p1GameGrid.maskedGrid);
+        p1.initGrids(p1GameGrid, p2GameGrid.maskedGrid);
+
+        final Map<Player, WriteGameGrid> playerToGrid = new HashMap<>();
+        playerToGrid.put(p1, p1GameGrid);
+        playerToGrid.put(p2, p2GameGrid);
+
+        Player current = p1;
+        Player opponent = p2;
+        while (!killEveryBody(current, playerToGrid.get(opponent))) {
+            Player t = current;
+            current = opponent;
+            opponent = t;
         }
+        current.handleResult(true);
+        opponent.handleResult(false);
     }
 
-    private boolean playRound(Player p1, WriteGameGrid opponent) {
-        boolean hit = true;
-        boolean victory = !opponent.hasAfloatShip();
-
-        while (hit && !victory) {
-            hit = opponent.applyShot(p1.makeShot(opponent.maskedGrid));
+    private boolean killEveryBody(Player p1, WriteGameGrid opponent) {
+        boolean victory;
+        boolean hit;
+        do {
+            hit = opponent.applyShot(p1.makeShot());
             victory = !opponent.hasAfloatShip();
         }
+        while (!hit && !victory);
 
         return victory;
     }

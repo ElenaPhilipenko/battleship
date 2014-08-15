@@ -35,23 +35,25 @@ public class RandomPlayerTest extends AbstractTest {
 
     @BeforeMethod
     public void createPlayer() {
-        player = new RandomPlayer(Game.GRID_SIZE);
+        player = new RandomPlayer();
     }
 
     @Test
     public void testPlayGame() {
         Game game = new Game();
-        final Player p2 = new RandomPlayer(GRID_SIZE);
-        final Player p1 = new RandomPlayer(GRID_SIZE);
+        final Player p2 = new RandomPlayer();
+        final Player p1 = new RandomPlayer();
 
-        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(SHIP_SIZES), GRID_SIZE);
-        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(SHIP_SIZES), GRID_SIZE);
-        game.playGame(p1, p2, p1GameGrid, p2GameGrid);
+        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
+        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
+        p1.initGrids(p1GameGrid, p2GameGrid.maskedGrid);
+        p2.initGrids(p2GameGrid, p1GameGrid.maskedGrid);
+        game.playGame(p1, p2);
     }
 
     @Test
     public void testSizeOfCreatesShips() {
-        final Collection<Collection<GridSquare>> fleet = player.getShips(Game.SHIP_SIZES);
+        final Collection<Collection<GridSquare>> fleet = player.getShips();
 
         int sum = SHIP_SIZES.size();
         Assert.assertEquals(fleet.size(), sum);
@@ -59,7 +61,7 @@ public class RandomPlayerTest extends AbstractTest {
 
     @Test
     public void testCreatesShipsAreValid() {
-        final Collection<Collection<GridSquare>> fleet = player.getShips(Game.SHIP_SIZES);
+        final Collection<Collection<GridSquare>> fleet = player.getShips();
 
         Assert.assertTrue(ShipsValidator.isShipLocationsValid(fleet));
     }
@@ -68,8 +70,9 @@ public class RandomPlayerTest extends AbstractTest {
     public void testMakeRightShotAfterOneHit() {
         final WriteGameGrid gameGrid = createGrid();
         gameGrid.applyShot(new GridSquare(0, 0));
+        player.initGrids(null, gameGrid);
 
-        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot();
 
         Assert.assertTrue(gridSquare.equals(new GridSquare(1, 0)) || gridSquare.equals(new GridSquare(0, 1)));
     }
@@ -80,8 +83,9 @@ public class RandomPlayerTest extends AbstractTest {
         gameGrid.applyShot(new GridSquare(9, 3));
         gameGrid.applyShot(new GridSquare(9, 2));
         gameGrid.applyShot(new GridSquare(8, 3));
+        player.initGrids(null, gameGrid);
 
-        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot();
 
         Assert.assertTrue(gridSquare.equals(new GridSquare(9, 4)));
     }
@@ -92,8 +96,9 @@ public class RandomPlayerTest extends AbstractTest {
         //convert(new GridSquare(4, 1), new GridSquare(4, 2), new GridSquare(4, 3), new GridSquare(4, 4))
         gameGrid.applyShot(new GridSquare(4, 3));
         gameGrid.applyShot(new GridSquare(4, 2));
+        player.initGrids(null, gameGrid);
 
-        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot();
         LOG.info("GridSquare was selected: " + gridSquare);
         Assert.assertTrue(gridSquare.equals(new GridSquare(4, 1)) || gridSquare.equals(new GridSquare(4, 4)));
     }
@@ -104,8 +109,9 @@ public class RandomPlayerTest extends AbstractTest {
         gameGrid.applyShot(new GridSquare(4, 3));
         gameGrid.applyShot(new GridSquare(4, 2));
         gameGrid.applyShot(new GridSquare(4, 4));
+        player.initGrids(null, gameGrid);
 
-        GridSquare gridSquare = player.makeShot(gameGrid.maskedGrid);
+        GridSquare gridSquare = player.makeShot();
         LOG.info("GridSquare was selected: " + gridSquare);
         Assert.assertTrue(gridSquare.equals(new GridSquare(4, 1)) || gridSquare.equals(new GridSquare(4, 5)));
 
