@@ -46,12 +46,11 @@ public class GameStage extends Stage {
             root.setSpacing(10);
             setScene(new Scene(root));
             setWidth(810);
-            setHeight(400);
+            setHeight(340);
             setTitle("BattleShip");
             show();
         });
     }
-
 
     public void showResult(boolean victory) {
         new JFXPanel();
@@ -85,7 +84,6 @@ public class GameStage extends Stage {
         }
     }
 
-
     private void createGameGrids(HBox root) {
         final GridPane gridPane = new GridPane();
         ownGridValues.squares.forEach(s -> {
@@ -105,12 +103,8 @@ public class GameStage extends Stage {
             myShots.put(s, b);
             b.setOnAction(e -> {
                 final GridSquare candidate = new GridSquare(s.x, s.y);
-                if (opponentGridValues.findNotShotSquares().contains(candidate)) {
-                    try {
-                        nextShot.put(candidate);
-                    } catch (InterruptedException e1) {
-                        throw new RuntimeException(e1);
-                    }
+                if (opponentGridValues.findNotShotSquares().contains(candidate) && nextShot.size() == 0) {
+                    nextShot.add(candidate);
                 }
             });
             opponentGridPane.add(b, s.y, s.x);

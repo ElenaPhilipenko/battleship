@@ -1,6 +1,7 @@
 package com.github.elkurilina.seabattle;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Game contains rules of playing SeaBattle game.
@@ -11,8 +12,9 @@ public class Game {
     public static final int GRID_SIZE = 10;
     public static final Collection<Integer> SHIP_SIZES = Collections.unmodifiableList(
             Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1));
+    private final ExecutorService executorService = new ThreadPoolExecutor(2, 2, 3, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
 
-    public void playGame(Player p1, Player p2) {
+    public void playGame(Player p1, Player p2) throws ExecutionException, InterruptedException {
         final Map<Player, WriteGameGrid> playerToGrid = initGrids(p1, p2);
 
         Player current = p1;
@@ -29,30 +31,30 @@ public class Game {
     private Map<Player, WriteGameGrid> initGrids(Player p1, Player p2) {
         final Map<Player, WriteGameGrid> playerToGrid = new HashMap<>();
 
-        final WriteGameGrid[] p2GameGrid = {null};
-        final WriteGameGrid[] p1GameGrid = {null};
+        final Future<WriteGameGrid> futureGrid1 = initGridInTread(p1, playerToGrid);
+        final Future<WriteGameGrid> futureGrid2 = initGridInTread(p2, playerToGrid);
 
-        Thread thread = new Thread(() -> {
-            p1GameGrid[0] = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
-            playerToGrid.put(p1, p1GameGrid[0]);
-        });
-        thread.start();
-
-        Thread thread2 = new Thread(() -> {
-            p2GameGrid[0] = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
-            playerToGrid.put(p2, p2GameGrid[0]);
-        });
-        thread2.start();
-
+        final WriteGameGrid grid1;
+        final WriteGameGrid grid2;
         try {
-            thread2.join();
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            grid2 = futureGrid2.get();
+            grid1 = futureGrid1.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        p2.initGrids(p2GameGrid[0], p1GameGrid[0].maskedGrid);
-        p1.initGrids(p1GameGrid[0], p2GameGrid[0].maskedGrid);
+
+        p2.initGrids(grid2, grid1.maskedGrid);
+        p1.initGrids(grid1, grid2.maskedGrid);
         return playerToGrid;
+    }
+
+    private Future<WriteGameGrid> initGridInTread(Player p1, Map<Player, WriteGameGrid> playerToGrid) {
+        final Callable<WriteGameGrid> callable = () -> {
+            final WriteGameGrid grid = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
+            playerToGrid.put(p1, grid);
+            return grid;
+        };
+        return executorService.submit(callable);
     }
 
     private boolean killEveryBody(Player p1, WriteGameGrid opponent) {
@@ -66,5 +68,6 @@ public class Game {
 
         return victory;
     }
+
 
 }

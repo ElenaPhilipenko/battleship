@@ -46,6 +46,7 @@ public class ShipsCreatingStage extends Stage {
             randomButton.setOnAction(e -> {
                 try {
                     shipsQueue.put(new RandomShipLocator().createShips(Game.SHIP_SIZES, Game.GRID_SIZE));
+                    close();
                 } catch (InterruptedException e1) {
                     throw new RuntimeException(e1);
                 }

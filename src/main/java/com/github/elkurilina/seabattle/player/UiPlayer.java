@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 /**
@@ -33,8 +34,7 @@ public class UiPlayer implements Player {
         IMAGES.put(SquareState.HIDDEN, new Image(GameStage.class.getResourceAsStream("/img/empty.png")));
     }
 
-
-    private final BlockingQueue<GridSquare> nextShot = new SynchronousQueue<>();
+    private final BlockingQueue<GridSquare> nextShot = new LinkedBlockingQueue<>();
     private final BlockingQueue<Collection<Collection<GridSquare>>> ships = new SynchronousQueue<>();
 
     private GameStage gameStage;

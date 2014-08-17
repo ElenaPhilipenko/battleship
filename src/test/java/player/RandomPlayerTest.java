@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 import static com.github.elkurilina.seabattle.Game.GRID_SIZE;
 import static com.github.elkurilina.seabattle.Game.SHIP_SIZES;
@@ -39,7 +40,7 @@ public class RandomPlayerTest extends AbstractTest {
     }
 
     @Test
-    public void testPlayGame() {
+    public void testPlayGame() throws ExecutionException, InterruptedException {
         Game game = new Game();
         final Player p2 = new RandomPlayer();
         final Player p1 = new RandomPlayer();
