@@ -13,15 +13,7 @@ public class Game {
             Arrays.asList(4, 3, 3, 2, 2, 2, 1, 1, 1, 1));
 
     public void playGame(Player p1, Player p2) {
-        final WriteGameGrid p1GameGrid = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
-        final WriteGameGrid p2GameGrid = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
-
-        p2.initGrids(p2GameGrid, p1GameGrid.maskedGrid);
-        p1.initGrids(p1GameGrid, p2GameGrid.maskedGrid);
-
-        final Map<Player, WriteGameGrid> playerToGrid = new HashMap<>();
-        playerToGrid.put(p1, p1GameGrid);
-        playerToGrid.put(p2, p2GameGrid);
+        final Map<Player, WriteGameGrid> playerToGrid = initGrids(p1, p2);
 
         Player current = p1;
         Player opponent = p2;
@@ -34,6 +26,35 @@ public class Game {
         opponent.handleResult(false);
     }
 
+    private Map<Player, WriteGameGrid> initGrids(Player p1, Player p2) {
+        final Map<Player, WriteGameGrid> playerToGrid = new HashMap<>();
+
+        final WriteGameGrid[] p2GameGrid = {null};
+        final WriteGameGrid[] p1GameGrid = {null};
+
+        Thread thread = new Thread(() -> {
+            p1GameGrid[0] = WriteGameGrid.createGameGidWithShips(p1.getShips(), GRID_SIZE);
+            playerToGrid.put(p1, p1GameGrid[0]);
+        });
+        thread.start();
+
+        Thread thread2 = new Thread(() -> {
+            p2GameGrid[0] = WriteGameGrid.createGameGidWithShips(p2.getShips(), GRID_SIZE);
+            playerToGrid.put(p2, p2GameGrid[0]);
+        });
+        thread2.start();
+
+        try {
+            thread2.join();
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        p2.initGrids(p2GameGrid[0], p1GameGrid[0].maskedGrid);
+        p1.initGrids(p1GameGrid[0], p2GameGrid[0].maskedGrid);
+        return playerToGrid;
+    }
+
     private boolean killEveryBody(Player p1, WriteGameGrid opponent) {
         boolean victory;
         boolean hit;
@@ -41,7 +62,7 @@ public class Game {
             hit = opponent.applyShot(p1.makeShot());
             victory = !opponent.hasAfloatShip();
         }
-        while (!hit && !victory);
+        while (hit && !victory);
 
         return victory;
     }
