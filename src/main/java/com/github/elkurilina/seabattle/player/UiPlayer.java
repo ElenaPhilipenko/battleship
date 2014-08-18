@@ -34,7 +34,7 @@ public class UiPlayer implements Player {
         IMAGES.put(SquareState.HIDDEN, new Image(GameStage.class.getResourceAsStream("/img/empty.png")));
     }
 
-    private final BlockingQueue<GridSquare> nextShot = new LinkedBlockingQueue<>();
+    private final BlockingQueue<GridSquare> nextShot = new LinkedBlockingQueue<>(1);
     private final BlockingQueue<Collection<Collection<GridSquare>>> ships = new SynchronousQueue<>();
 
     private GameStage gameStage;
