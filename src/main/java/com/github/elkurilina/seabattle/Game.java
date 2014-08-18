@@ -19,13 +19,25 @@ public class Game {
 
         Player current = p1;
         Player opponent = p2;
-        while (!killEveryBody(current, playerToGrid.get(opponent))) {
+        while (!makeShotsUntilMiss(current, playerToGrid.get(opponent))) {
             Player t = current;
             current = opponent;
             opponent = t;
         }
         current.handleResult(true);
         opponent.handleResult(false);
+    }
+
+    private boolean makeShotsUntilMiss(Player p1, WriteGameGrid opponent) {
+        boolean victory;
+        boolean hit;
+        do {
+            hit = opponent.applyShot(p1.makeShot());
+            victory = !opponent.hasAfloatShip();
+        }
+        while (hit && !victory);
+
+        return victory;
     }
 
     private Map<Player, WriteGameGrid> initGrids(Player p1, Player p2) {
@@ -56,18 +68,5 @@ public class Game {
         };
         return executorService.submit(callable);
     }
-
-    private boolean killEveryBody(Player p1, WriteGameGrid opponent) {
-        boolean victory;
-        boolean hit;
-        do {
-            hit = opponent.applyShot(p1.makeShot());
-            victory = !opponent.hasAfloatShip();
-        }
-        while (hit && !victory);
-
-        return victory;
-    }
-
 
 }
